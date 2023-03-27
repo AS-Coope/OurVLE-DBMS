@@ -29,6 +29,10 @@ DATABASE = 'lab3_3161'
 
 app = Flask(__name__)
 
+def make_connection_cursor():
+    return mysql.connector.connect(user=USER, password=PASSWORD,
+                                host=HOST,
+                                database=DATABASE).cursor()
 
 
 
@@ -42,14 +46,37 @@ def index():
 
 @app.route('/login',methods =['POST','GET'])
 def login():
+    """1st check if the user is already signed in"""
     if current_user.is_authenticated:
         respr =  jsonify({"result":"Successful Login"})
         return make_response(respr,200)
     
     form = Login()
     if request.method == 'POST'  and form.validate_on_submit():
-        username = form.UID.data
+        userID = form.userID.data
         password = form.Password.data
+
+        try:
+            cursor = make_connection_cursor()
+            sql_stmt = "SELECT password FROM Account WHERE AID = %(uID)s"
+            cursor.execute(sql_stmt,{'uID':userID})
+            userPassword = cursor.fetchone()
+
+            if user:
+                if sha256_crypt.verify(userPassword, password):
+                        '''Prob hav to use session storage
+                        Or talk to Stone about using a user object in order to store login
+                        state'''
+
+                pass
+            else:
+                return make_response({'error':"Invalid Credentials, Please try again."},401)
+                
+
+
+        except Exception as ex:
+            return make_response({'error': str(ex)}, 400)
+
         '''Complete here'''
 
     
