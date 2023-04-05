@@ -48,10 +48,11 @@ class Login(FlaskForm):
 
 class CreateCourse(FlaskForm):
     CourseName = StringField('cName',validators=[InputRequired()])
+    CourseCode = StringField('cCode',validators=[InputRequired()])
     # cID assigned by DB
 
 class DiscussionForum(FlaskForm):
-    # dfID assigned by DB
+    # Discussion forum ID (dfID) assigned by DB
     #cID assigned by the API
     ForumName = StringField('ForumName',validators=[InputRequired()])
 
