@@ -8,6 +8,7 @@ from forms_OurVLE import *
 
 
 """
+snippet here
 password = sha256_crypt.hash("password")
 password2 = sha256_crypt.hash("password")
 
@@ -28,6 +29,9 @@ HOST = 'localhost'
 DATABASE = 'lab3_3161'
 
 app = Flask(__name__)
+
+
+# Create a connection class here 
 
 def make_connection_cursor():
     return mysql.connector.connect(user=USER, password=PASSWORD,
@@ -75,10 +79,10 @@ def login():
                 errors = {
                     'errrors': form_errors(form)
                 }
+                cursor.close()
                 return make_response(errors,400)
                 
 
-            cursor.close()
         except Exception as ex:
             return make_response({'error': "There has been an error in communicating with the database when attempting to Login. Please contact your system administrator"}, 400)
     
@@ -87,7 +91,7 @@ def login():
 
 
         
-@app.route('/Employee-registration',methods=['GET', 'POST'])
+@app.route('/employee-registration',methods=['GET', 'POST'])
 def empRegister():
 
     form = LecturerRegistration()
@@ -101,39 +105,93 @@ def empRegister():
 
         try:
             cursor = make_connection_cursor()
-            sql_stmt = "INSERT into LECTURER (lID,Lname,lPassword) VALUES( %(lectID)s,  %(lectName)s,  %(lectpwd)s);"  # Used to secure SQL statements to prevent injection
-            cursor.execute(sql_stmt,{'lectID':LectID, 'lectName':fName,'lectpwd':hashedPassword})
+            sql_stmt = "INSERT into LECTURER (lID,Fname,Lname,lPassword) VALUES( %(lectID)s,  %(lectFname)s, %(lectLname)s,  %(lectpwd)s);"  # Used to secure SQL statements to prevent injection
+            cursor.execute(sql_stmt,{'lectID':LectID, 'lectFname':fName,'lectLname':lName,'lectpwd':hashedPassword})
+            cursor.close()
             return make_response({'success':'Your account has been created.'},201)
 
         except Exception as ex:
-            return make_response({'error': "There has been an error in communicating with the database when attempting to Login. Please contact your system administrator"}, 400)
+            return make_response({'error': "There has been an error in communicating with the database when attempting to creating your account. Please contact your system administrator"}, 400)
     
-    '''IF the request is GET return the template to create the account'''
+    '''If the request is GET return the template to create the account'''
     
 
         
 
-@app.route('/Student-registration',methods=['GET', 'POST'])
-def empRegister():
+@app.route('/student-registration',methods=['GET', 'POST'])
+def studentRegister():
 
     form = StudentRegistration()
     if request.method == 'POST'  and form.validate_on_submit():
         fName = form.Fname.data
         lName = form.Lname.data
-        LectID = form.StudentID.data
+        stuID = form.StudentID.data
         pwd = form.Passowrd.data
         
         hashedPassword = sha256_crypt.hash(pwd)
         '''complete here'''
         try:
             cursor = make_connection_cursor()
-            sql_stmt = "INSERT into Student (lID,Lname,lPassword) VALUES( %(lectID)s,  %(lectName)s,  %(lectpwd)s);"  # Used to secure SQL statements to prevent injection
-            cursor.execute(sql_stmt,{'lectID':LectID, 'lectName':fName,'lectpwd':hashedPassword})
+            sql_stmt = "INSERT into Student (lID,Fname,Lname,sPassword) VALUES( %(sID)s,  %(Fname)s,%(Lname)s,  %(lectpwd)s);"  # Used to secure SQL statements to prevent injection
+            cursor.execute(sql_stmt,{'lectID':stuID, 'Fname':fName,'Lname':lName,'sPassword':hashedPassword})
+            cursor.close()
             return make_response({'success':'Your account has been created.'},201)
 
         except Exception as ex:
-            return make_response({'error': "There has been an error in communicating with the database when attempting to Login. Please contact your system administrator"}, 400)
+            return make_response({'error': "There has been an error in communicating with the database when attempting to create your account. Please contact your system administrator"}, 400)
     
+    '''If the request is GET return the template to create the account'''
+
+@app.route('/create-course',methods=['GET','POST'])
+def createCourse():
+
+    '''If the user is not signed in as an admin the person is not allowed to continue'''
+
+    if not session['admin_id']:
+        return make_response({'Unauthorised':'You are not authorised to execute the requested service'},401)
+    
+
+    form = CreateCourse()
+    if request.method == 'POST'  and form.validate_on_submit():
+
+        cCode = form.CourseCode.data
+        cTitle = form.CourseName.data
+        try:
+            cursor = make_connection_cursor()
+            sql_stmt = "INSERT into Course (cName,cCode) VALUES(%(cc)s, %(ct)s);"
+            cursor.execute(sql_stmt,{'cc':cCode,'ct':cTitle})
+            cursor.close()
+            return make_response({'success':f'The course, {cTitle} has been created.'},201)
+        except Exception as ex:
+            return make_response({'error': f"There has been an error in communicating with the database when attempting to creat the course {cTitle}. Please contact your system administrator"}, 400)
+        
+    '''If the request is GET return the template to create the account'''
+
+
+@app.route('/get-courses',methods=['GET'])
+def getCourses():
+    try:
+        cursor = make_connection_cursor()
+        sql_stmt = "SELECT * from Course;"
+        cursor.execute(sql_stmt)
+        course_list = []
+
+        for cName, cCode in cursor:
+            crse ={}
+            crse['courseCode'] = cCode
+            crse['courseName'] = cName
+            course_list.append(crse)
+        cursor.close()
+
+        return make_response(course_list,200)   
+    
+        
+    except Exception as ex:
+        return make_response({'error':'There has been an error in communicating with the database while retrieving the course. Please contact your sysem administrator'},400)
+    
+
+    
+
 
  
 
