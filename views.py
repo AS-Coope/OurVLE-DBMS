@@ -26,17 +26,32 @@ print(sha256_crypt.verify("password", password))
 USER = 'enter user'
 PASSWORD = 'enter password here'
 HOST = 'localhost'
-DATABASE = 'lab3_3161'
+DATABASE = 'db_name'
 
 app = Flask(__name__)
 
 
-# Create a connection class here 
+class connectionHandler:
 
-def make_connection_cursor():
-    return mysql.connector.connect(user=USER, password=PASSWORD,
+    def __init__(self) -> None:
+        self.connection = self.make_connection_cursor()
+        self.cursor =  self.connection.cursor()
+
+    @classmethod
+    def make_connection_cursor(self):
+        return mysql.connector.connect(user=USER, password=PASSWORD,
                                 host=HOST,
-                                database=DATABASE).cursor()
+                                database=DATABASE)
+    
+    def close_cursor(self):
+        self.cursor.close()
+    
+    def close_connection(self):
+        self.connection.close()
+    
+    def close_cursor_and_connection(self):
+        self.cursor.close()
+        self.connection.close()
 
 
 
@@ -58,10 +73,11 @@ def login():
         Enteredpassword = form.Password.data
 
         try:
-            cursor = make_connection_cursor()
+            conn = connectionHandler()
             sql_stmt = "SELECT password FROM Account WHERE AID = %(uID)s;"  # Used to secure SQL statements to prevent injection
-            cursor.execute(sql_stmt,{'uID':userID})
-            userPassword = cursor.fetchone()
+            conn.cursor.execute(sql_stmt,{'uID':userID})
+            #conn.cursor.commit() # may need to do this
+            userPassword =  conn.cursor.fetchone()
 
             if userPassword:
                 if sha256_crypt.verify(userPassword, Enteredpassword):
@@ -79,11 +95,12 @@ def login():
                 errors = {
                     'errrors': form_errors(form)
                 }
-                cursor.close()
+                conn.close_cursor_and_connection()
                 return make_response(errors,400)
                 
 
         except Exception as ex:
+            conn.close_cursor_and_connection()
             return make_response({'error': "There has been an error in communicating with the database when attempting to Login. Please contact your system administrator"}, 400)
     
     # If request is not post render the template for logging in below
@@ -104,13 +121,15 @@ def empRegister():
         hashedPassword = sha256_crypt.hash(pwd)
 
         try:
-            cursor = make_connection_cursor()
+            conn = connectionHandler()
             sql_stmt = "INSERT into LECTURER (lID,Fname,Lname,lPassword) VALUES( %(lectID)s,  %(lectFname)s, %(lectLname)s,  %(lectpwd)s);"  # Used to secure SQL statements to prevent injection
-            cursor.execute(sql_stmt,{'lectID':LectID, 'lectFname':fName,'lectLname':lName,'lectpwd':hashedPassword})
-            cursor.close()
+            conn.cursor.execute(sql_stmt,{'lectID':LectID, 'lectFname':fName,'lectLname':lName,'lectpwd':hashedPassword})
+            conn.cursor.commit()
+            conn.close_cursor_and_connection()
             return make_response({'success':'Your account has been created.'},201)
 
         except Exception as ex:
+            conn.close_cursor_and_connection()
             return make_response({'error': "There has been an error in communicating with the database when attempting to creating your account. Please contact your system administrator"}, 400)
     
     '''If the request is GET return the template to create the account'''
@@ -131,10 +150,11 @@ def studentRegister():
         hashedPassword = sha256_crypt.hash(pwd)
         '''complete here'''
         try:
-            cursor = make_connection_cursor()
+            conn = connectionHandler()
             sql_stmt = "INSERT into Student (lID,Fname,Lname,sPassword) VALUES( %(sID)s,  %(Fname)s,%(Lname)s,  %(lectpwd)s);"  # Used to secure SQL statements to prevent injection
-            cursor.execute(sql_stmt,{'lectID':stuID, 'Fname':fName,'Lname':lName,'sPassword':hashedPassword})
-            cursor.close()
+            conn.cursor.execute(sql_stmt,{'lectID':stuID, 'Fname':fName,'Lname':lName,'sPassword':hashedPassword})
+            conn.cursor.commit()
+            conn.close_cursor_and_connection()
             return make_response({'success':'Your account has been created.'},201)
 
         except Exception as ex:
@@ -165,12 +185,15 @@ def createCourse():
         cCode = form.CourseCode.data
         cTitle = form.CourseName.data
         try:
-            cursor = make_connection_cursor()
+            conn = connectionHandler()
             sql_stmt = "INSERT into Course (cName,cCode) VALUES(%(cc)s, %(ct)s);"
-            cursor.execute(sql_stmt,{'cc':cCode,'ct':cTitle})
-            cursor.close()
+            conn.cursor.execute(sql_stmt,{'cc':cCode,'ct':cTitle})
+            conn.cursor.commit()
+            conn.close_cursor_and_connection()
             return make_response({'success':f'The course, {cTitle} has been created.'},201)
+
         except Exception as ex:
+            conn.close_cursor_and_connection()
             return make_response({'error': f"There has been an error in communicating with the database when attempting to creat the course {cTitle}. Please contact your system administrator"}, 400)
         
     '''If the request is GET return the template to create the account'''
@@ -184,17 +207,17 @@ def createCourse():
 @app.route('/get-courses',methods=['GET'])
 def getCourses():
     try:
-        cursor = make_connection_cursor()
+        conn = connectionHandler()
         sql_stmt = "SELECT * from Course;"
-        cursor.execute(sql_stmt)
+        conn.cursor.execute(sql_stmt)
         course_list = []
 
-        for cName, cCode in cursor:
+        for cName, cCode in conn.cursor:
             crse ={}
             crse['courseCode'] = cCode
             crse['courseName'] = cName
             course_list.append(crse)
-        cursor.close()
+        conn.close_cursor_and_connection()
 
         return make_response(course_list,200)   
     
@@ -204,20 +227,20 @@ def getCourses():
     
 
     
-@app.route('/get-course/<studentId>')
+@app.route('/get-course/<studentId>',methods=['GET'])
 def getStudentCourse(studentId):
 
     try:
-        cursor = make_connection_cursor()
+        conn = connectionHandler()
 
         ''''To complete this query it should search in the enrollment table for the student ID
             then with the cIDs that it have -if any- search for the course titles'''
         
         sql_stmt = "SELECT DISTINCT cID FROM enrollment WHERE sID  =%(sID)s;" # select cIDs for student
-        courses = cursor.execute(sql_stmt,{'sID':studentId})
+        conn.cursor.execute(sql_stmt,{'sID':studentId})
 
-        course_list = [cName for cName in courses]
-        cursor.close()
+        course_list = [cName for cName in conn.cursor]
+        conn.close_cursor_and_connection()
         
         if course_list:
             return make_response({"success":course_list},200)
@@ -225,6 +248,7 @@ def getStudentCourse(studentId):
             return make_response({'Info': []},204)
 
     except Exception as ex:
+        conn.close_cursor_and_connection()
         return make_response({'error':f'There has been an error in communicating with the database while retrieving the Student, {studentId} courses. Please contact your sysem administrator'},400)
 
 
@@ -238,18 +262,18 @@ Returns:
 """
 
 
-@app.route('/LecturerCourses/<lectID>')
+@app.route('/LecturerCourses/<lectID>',methods=['GET'])
 def lecturerCourses(lectID):
     try:
-        cursor = make_connection_cursor()
+        conn = connectionHandler()
 
         ''''To complete this query it should search in the LectOfCourse table for the lect ID
             then with the lectID that it have -if any- search for the course titles'''
         
         sql_stmt = "SELECT DISTINCT cID FROM enrollment WHERE sID  =%(lectID)s;" # select cIDs for Lecturer
-        coursesLectured = cursor.execute(sql_stmt,{'lectID':lectID})
+        conn.cursor.execute(sql_stmt,{'lectID':lectID})
 
-        courses_lectured_list = [cName for cName in coursesLectured]
+        courses_lectured_list = [cName for cName in conn.cursor]
 
         if courses_lectured_list:
             return make_response({"success":courses_lectured_list},200)
@@ -263,13 +287,49 @@ def lecturerCourses(lectID):
                               ' Please try again if the issue persist please contact your sysem administrator'},400)
 
 
-
- 
-
-
-
+@app.route('/assigned-Lecturer-to-course',methods=['GET','POST'])
+def assignLecturer(lectID):
+    form = AssignLecturerToCourse()
     
-    
+    try:
+        conn = connectionHandler()
+        list_of_lecturers = [] # stores tuple with lect fullname and ID
+        list_of_courses = [] # stores tuple with course title and course ID
+
+        # populate the drop down boxes with the lecturer names and course title
+        conn.cursor.execute("SELECT * FROM Lecturer;")
+        for fName, lName, lID in conn.cursor:
+            list_of_lecturers.append((f'{fName} {lName}',lID))
+
+        conn.cursor.execute("SELECT * FROM Course;")
+        for cName, cID in conn.cursor:
+            list_of_courses.append((cName,cID))
+        
+        form.LecturerOptions.choices = list_of_lecturers
+        form.CourseOptions.choices = list_of_courses
+
+        if request.method == 'POST' and form.validate_on_submit():
+            lectID = form.LecturerOptions.data
+            courseID = form.CourseOptions.data
+
+            sql_stmt = "SELECT COUNT(lID) FROM LectOfCourse WHERE cID  =%(courseID)s;"
+            conn.cursor.execute(sql_stmt,{'courseID':courseID})
+            count = conn.cursor.fetchone()[0]
+            if count > 0:
+                return make_response({'error':'There is already a lecturer assigned to the Selected course.'})
+            else:
+                sql_insert_stmt = "INSERT INTO LectOfCourse(cID,lID) VALUES(%(cid)s, %(lectID)s);"
+                conn.cursor.execute(sql_insert_stmt,{'cid':courseID,'lid':lectID})
+                conn.cursor.commit()
+
+                conn.close_cursor_and_connection()
+
+                return make_response({'success':f'The course has been assigned a lecturer'})
+
+    except Exception as ex:
+        return make_response({'error':'An error occurred when attempting to update the course information'})
+
+
 
 
 

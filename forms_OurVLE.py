@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextAreaField, SelectField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wtforms.validators import InputRequired, Email
+from wtforms.validators import InputRequired, Email,DataRequired
 
 
 '''
@@ -51,6 +51,13 @@ class CreateCourse(FlaskForm):
     CourseCode = StringField('cCode',validators=[InputRequired()])
     # cID assigned by DB
 
+class AssignLecturerToCourse(FlaskForm):
+
+
+    LecturerOptions = SelectField('Lecturer',validate_choice=True)# validate choices set to true means selection must come from the predefined list
+    #there are exceptions in using valid choices https://wtforms.readthedocs.io/en/2.3.x/fields/ under SelectField
+    CourseOptions = SelectField('Course',validate_choice=True)
+    
 class DiscussionForum(FlaskForm):
     # Discussion forum ID (dfID) assigned by DB
     #cID assigned by the API
@@ -61,4 +68,5 @@ class DiscussionThread(FlaskForm):
     #dfID assigned by API
     title = StringField('ThName',validators=[InputRequired()])
     Post = StringField('PostName',validators=[InputRequired()])
-    
+
+
