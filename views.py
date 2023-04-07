@@ -142,6 +142,14 @@ def studentRegister():
     
     '''If the request is GET return the template to create the account'''
 
+
+    """_summary_
+        Creates a Course
+    Returns:
+        Unauthorised: Informs the user that they do not have the prvilage to access the requested content
+        Success: Informs the user that a particular course has been created
+        error: Appropriate error message
+    """
 @app.route('/create-course',methods=['GET','POST'])
 def createCourse():
 
@@ -167,7 +175,12 @@ def createCourse():
         
     '''If the request is GET return the template to create the account'''
 
-
+    """_summary_
+        Retrieve all the courses
+    Returns:
+        Success: list of courses ad dictionary objects
+        Error: Appropriate error message
+    """
 @app.route('/get-courses',methods=['GET'])
 def getCourses():
     try:
@@ -191,6 +204,64 @@ def getCourses():
     
 
     
+@app.route('/get-course/<studentId>')
+def getStudentCourse(studentId):
+
+    try:
+        cursor = make_connection_cursor()
+
+        ''''To complete this query it should search in the enrollment table for the student ID
+            then with the cIDs that it have -if any- search for the course titles'''
+        
+        sql_stmt = "SELECT DISTINCT cID FROM enrollment WHERE sID  =%(sID)s;" # select cIDs for student
+        courses = cursor.execute(sql_stmt,{'sID':studentId})
+
+        course_list = [cName for cName in courses]
+        cursor.close()
+        
+        if course_list:
+            return make_response({"success":course_list},200)
+        else:
+            return make_response({'Info': []},204)
+
+    except Exception as ex:
+        return make_response({'error':f'There has been an error in communicating with the database while retrieving the Student, {studentId} courses. Please contact your sysem administrator'},400)
+
+
+
+"""_summary_
+    This function is designed to Retrieve courses taught by a particular lecturer 
+Returns:
+    sucess: List of all the courses taught by the instructor
+    info: An empty list if the lecturer doesnt teach any courses
+    error: Appropriate error message
+"""
+
+
+@app.route('/LecturerCourses/<lectID>')
+def lecturerCourses(lectID):
+    try:
+        cursor = make_connection_cursor()
+
+        ''''To complete this query it should search in the LectOfCourse table for the lect ID
+            then with the lectID that it have -if any- search for the course titles'''
+        
+        sql_stmt = "SELECT DISTINCT cID FROM enrollment WHERE sID  =%(lectID)s;" # select cIDs for Lecturer
+        coursesLectured = cursor.execute(sql_stmt,{'lectID':lectID})
+
+        courses_lectured_list = [cName for cName in coursesLectured]
+
+        if courses_lectured_list:
+            return make_response({"success":courses_lectured_list},200)
+        else:
+            return make_response({'Info': []},204)
+
+
+    except Exception as ex:
+        return make_response({'error':f'There has been an error in communicating with the database while retrieving '\
+                              'the courses for a lecturer with ID, {lectID}.'\
+                              ' Please try again if the issue persist please contact your sysem administrator'},400)
+
 
 
  
