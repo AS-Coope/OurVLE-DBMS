@@ -53,10 +53,32 @@ class CreateCourse(FlaskForm):
 
 class AssignLecturerToCourse(FlaskForm):
 
+    # validate choices set to true means selection must come from the predefined list
+    #there are exceptions in using valid choices https://wtforms.readthedocs.io/en/2.3.x/fields/ under SelectField subheading
 
-    LecturerOptions = SelectField('Lecturer',validate_choice=True)# validate choices set to true means selection must come from the predefined list
-    #there are exceptions in using valid choices https://wtforms.readthedocs.io/en/2.3.x/fields/ under SelectField
+    LecturerOptions = SelectField('Lecturer',validate_choice=True)
     CourseOptions = SelectField('Course',validate_choice=True)
+
+class CourseRegistration(FlaskForm):
+    # validate choices set to true means selection must come from the predefined list
+    #there are exceptions in using valid choices https://wtforms.readthedocs.io/en/2.3.x/fields/ under SelectField subheading
+    StudentID = StringField('studentID',validators=[InputRequired()])
+    CourseOptions = SelectField('Course',validate_choice=True)
+
+class GetRegisteredStudents(FlaskForm):
+    CourseOptions = SelectField('Course',validate_choice=True)
+
+class GetCalendarEvents(FlaskForm):
+    CourseOptions = SelectField('Course',validate_choice=True)
+
+class getStudentCalendarEvents():
+    student = StringField('studentID',validators=[InputRequired()])
+    CourseOptions = SelectField('Course',validate_choice=True)
+
+
+
+
+    
     
 class DiscussionForum(FlaskForm):
     # Discussion forum ID (dfID) assigned by DB
@@ -66,7 +88,9 @@ class DiscussionForum(FlaskForm):
 class DiscussionThread(FlaskForm):
     #dtID assigned by DB
     #dfID assigned by API
-    title = StringField('ThName',validators=[InputRequired()])
+    title = StringField('ThrdName',validators=[InputRequired()])
     Post = StringField('PostName',validators=[InputRequired()])
 
+
+    
 

@@ -93,15 +93,17 @@ def login():
             # There are other errors in the form that have stopped it from being processed
             else:
                 errors = {
-                    'errrors': form_errors(form)
+                    'errors': form_errors(form)
                 }
                 conn.close_cursor_and_connection()
                 return make_response(errors,400)
                 
-
+        except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
         except Exception as ex:
             conn.close_cursor_and_connection()
-            return make_response({'error': "There has been an error in communicating with the database when attempting to Login. Please contact your system administrator"}, 400)
+            return make_response({'error': "There has been an error in communicating with the database when attempting to Login. Please contact your system administrator"}, 503)
     
     # If request is not post render the template for logging in below
     '''Complete here'''
@@ -127,10 +129,13 @@ def empRegister():
             conn.cursor.commit()
             conn.close_cursor_and_connection()
             return make_response({'success':'Your account has been created.'},201)
-
+        
+        except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
         except Exception as ex:
             conn.close_cursor_and_connection()
-            return make_response({'error': "There has been an error in communicating with the database when attempting to creating your account. Please contact your system administrator"}, 400)
+            return make_response({'error': "There has been an error in communicating with the database when attempting to creating your account. Please contact your system administrator"}, 503)
     
     '''If the request is GET return the template to create the account'''
     
@@ -156,9 +161,12 @@ def studentRegister():
             conn.cursor.commit()
             conn.close_cursor_and_connection()
             return make_response({'success':'Your account has been created.'},201)
-
+        except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+        
         except Exception as ex:
-            return make_response({'error': "There has been an error in communicating with the database when attempting to create your account. Please contact your system administrator"}, 400)
+            return make_response({'error': "There has been an error in communicating with the database when attempting to create your account. Please contact your system administrator"}, 503)
     
     '''If the request is GET return the template to create the account'''
 
@@ -192,9 +200,13 @@ def createCourse():
             conn.close_cursor_and_connection()
             return make_response({'success':f'The course, {cTitle} has been created.'},201)
 
+        except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+        
         except Exception as ex:
             conn.close_cursor_and_connection()
-            return make_response({'error': f"There has been an error in communicating with the database when attempting to creat the course {cTitle}. Please contact your system administrator"}, 400)
+            return make_response({'error': f"There has been an error in communicating with the database when attempting to creat the course {cTitle}. Please contact your system administrator"}, 503)
         
     '''If the request is GET return the template to create the account'''
 
@@ -221,9 +233,12 @@ def getCourses():
 
         return make_response(course_list,200)   
     
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
         
     except Exception as ex:
-        return make_response({'error':'There has been an error in communicating with the database while retrieving the course. Please contact your sysem administrator'},400)
+        return make_response({'error':'There has been an error in communicating with the database while retrieving the course. Please contact your sysem administrator'},503)
     
 
     
@@ -247,9 +262,13 @@ def getStudentCourse(studentId):
         else:
             return make_response({'Info': []},204)
 
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+    
     except Exception as ex:
         conn.close_cursor_and_connection()
-        return make_response({'error':f'There has been an error in communicating with the database while retrieving the Student, {studentId} courses. Please contact your sysem administrator'},400)
+        return make_response({'error':f'There has been an error in communicating with the database while retrieving the Student, {studentId} courses. Please contact your sysem administrator'},503)
 
 
 
@@ -280,11 +299,14 @@ def lecturerCourses(lectID):
         else:
             return make_response({'Info': []},204)
 
-
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+    
     except Exception as ex:
         return make_response({'error':f'There has been an error in communicating with the database while retrieving '\
                               'the courses for a lecturer with ID, {lectID}.'\
-                              ' Please try again if the issue persist please contact your sysem administrator'},400)
+                              ' Please try again if the issue persist please contact your sysem administrator'},503)
 
 
 @app.route('/assigned-Lecturer-to-course',methods=['GET','POST'])
@@ -293,20 +315,7 @@ def assignLecturer(lectID):
     
     try:
         conn = connectionHandler()
-        list_of_lecturers = [] # stores tuple with lect fullname and ID
-        list_of_courses = [] # stores tuple with course title and course ID
-
-        # populate the drop down boxes with the lecturer names and course title
-        conn.cursor.execute("SELECT * FROM Lecturer;")
-        for fName, lName, lID in conn.cursor:
-            list_of_lecturers.append((f'{fName} {lName}',lID))
-
-        conn.cursor.execute("SELECT * FROM Course;")
-        for cName, cID in conn.cursor:
-            list_of_courses.append((cName,cID))
         
-        form.LecturerOptions.choices = list_of_lecturers
-        form.CourseOptions.choices = list_of_courses
 
         if request.method == 'POST' and form.validate_on_submit():
             lectID = form.LecturerOptions.data
@@ -326,13 +335,260 @@ def assignLecturer(lectID):
 
                 return make_response({'success':f'The course has been assigned a lecturer'})
 
+        """If the request is GET"""    
+        
+        list_of_lecturers = [] # stores tuple with lect fullname and ID
+        list_of_courses = [] # stores tuple with course title and course ID
+
+        # populate the drop down boxes with the lecturer names and course title
+        conn.cursor.execute("SELECT * FROM Lecturer;")
+        for fName, lName, lID in conn.cursor:
+            list_of_lecturers.append((f'{fName} {lName}',lID))
+
+        conn.cursor.execute("SELECT * FROM Course;")
+        for cName, cID in conn.cursor:
+            list_of_courses.append((cName,cID))
+        
+        form.LecturerOptions.choices = list_of_lecturers
+        form.CourseOptions.choices = list_of_courses
+
+        """return the rendered template along with the form eg. return render_template('assign.html',form = form)"""
+
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+    
     except Exception as ex:
-        return make_response({'error':'An error occurred when attempting to update the course information'})
+        return make_response({'error':'An error occurred when attempting to update the course information'},503)
 
 
 
+@app.route('/course-registration',methods=['GET','POST'])
+def courseRegistration():
+
+    form = CourseRegistration()
+
+    try:
+        conn = connectionHandler()
+        if request.method == 'POST':
+            if form.validate():
+                studentID = form.StudentID.data
+                courseID = form.CourseOptions.data
+
+                #check if the student is already registered
+                sql_stmt_check_if_alrady_reg = "select IF((SELECT COUNT(sID) FROM LectOfCourse WHERE cID = %(courseID)s AND sID = %(studentID)s) > 0, 'Yes', 'No') as Result;"
+                conn.cursor.execute(sql_stmt_check_if_alrady_reg,{'courseID':courseID,'studentID':studentID})
+                
+                
+                if conn.cursor.fetchone() == 'Yes':
+                    return make_response({'error': "the Student is already registerd for the selected course"},400)
+                
+                #check to ensure the student is registered in no more that 6 courses
+                sql_stmt_check_course_limit = "select IF((SELECT COUNT(cID) FROM LectOfCourse WHERE sID = %(studentID)s) > 5, 'Yes', 'No') as Result;"
+                conn.cursor.execute(sql_stmt_check_course_limit,{'studentID':studentID})
+
+                if conn.cursor.fetchone() == 'Yes':
+                    return make_response({'error': "the student is already registered for the maximum of 6 credits"},400)
+                
+                #if all requirements are met commit
+                sql_stmt_register = "INSERT INTO StudOfCourse (sID,cID) VALUES(%(stuID)s, %(crsID)s);"
+                conn.cursor.execute(sql_stmt_register,{'stuID':studentID,'crsID':courseID})
+                conn.cursor.commit()
+
+                return make_response({'success':"The student has been registered for the course"},200)
+
+            else:
+                errors = {
+                    'errors': form_errors(form)
+                }
+                conn.close_cursor_and_connection()
+                return make_response(errors,400)
+
+        
+
+        """If Request is GET"""
+        list_of_courses = [] # stores tuple with course title and course ID
+
+        # populate the drop down boxes with the  course titles
+
+        conn.cursor.execute("SELECT * FROM Course;")
+        for cName, cID in conn.cursor:
+            list_of_courses.append((cName,cID))
+        
+        form.CourseOptions.choices = list_of_courses
+
+        """render the template with the form"""
+
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+    
+    except Exception as ex:
+        return make_response({'error':'An error occurred when attempting to update the course information'},503)
 
 
+@app.route('/get-students-for-course',methods=['GET','POST'])
+def getRegisteredStudents():
+
+    form  = GetRegisteredStudents()
+
+    try:
+        conn = connectionHandler()
+        if request.method == "POST":
+            if form.validate():
+
+                courseID = form.CourseOptions.data
+
+                sql_stmt = "SELECT DISTINCT sID FROM StudOfCourse WHERE cID = %(crseID)s;"
+                conn.cursor.execute(sql_stmt,{'crseID':courseID})
+
+                course_list= []
+
+                for cID in conn.cursor:
+                    course_list.append(cID)
+                
+                return make_response({'success':course_list},200)  
+            else:
+                errors = {
+                    'errors': form_errors(form)
+                }
+                conn.close_cursor_and_connection()
+                return make_response(errors,400)                
+    
+
+        if request.method == 'GET':
+            
+            list_of_courses = [] # stores tuple with course title and course ID
+
+            # populate the drop down boxes with the  course titles
+
+            conn.cursor.execute("SELECT * FROM Course;")
+            for cName, cID in conn.cursor:
+                list_of_courses.append((cName,cID))
+            
+            form.CourseOptions.choices = list_of_courses
+
+            """render the template with the form fields"""
+    
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+    
+    except Exception as ex:
+        return make_response({'error':'An error occurred when attempting to retrieve student information'},503)
+    
+@app.route('/get-calendar-events',methods=['GET','POST'])
+def getEvents():
+
+    form  = GetCalendarEvents()
+    try:
+        conn = connectionHandler()
+        if request.method == "POST":
+            if form.validate():
+
+                courseID = form.CourseOptions.data
+
+                """The Add query to acess CalendarEvents and CalEventOfCourse"""
+                sql_stmt = ""
+                conn.cursor.execute(sql_stmt,{'crseID':courseID})
+
+                events= []
+
+                for calEvName,evDate in conn.cursor:
+                    event ={}
+                    event['evDate']  = evDate
+                    event['calEvName'] = calEvName
+                    events.append(event)
+                
+                return make_response({'success':events},200)
+            else:
+                errors = {
+                    'errors': form_errors(form)
+                }
+                conn.close_cursor_and_connection()
+                return make_response(errors,400)
+
+        
+        
+
+        """GET Request"""
+        list_of_courses = [] # stores tuple with course title and course ID
+
+            # populate the drop down boxes with the  course titles
+
+        conn.cursor.execute("SELECT * FROM Course;")
+        for cName, cID in conn.cursor:
+            list_of_courses.append((cName,cID))
+        
+        form.CourseOptions.choices = list_of_courses
+
+        # return rendered template with form
+
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+    
+    except Exception as ex:
+        return make_response({'error':'An error occurred when attempting to retreive calendar Events'},503)
+    
+
+
+@app.route('/get-calendar-events-student',methods=['GET','POST'])
+def getStudentEvents():
+    form = getStudentCalendarEvents()
+
+    try:
+        conn = connectionHandler()
+
+        if request.method == 'POST':
+            if form.validate():
+                courseID = form.CourseOptions.data
+                studentID = form.student.data
+                
+                """The Add query to acess CalendarEvents and CalEventOfCourse for a particular Student"""
+                sql_stmt = ""
+                conn.cursor.execute(sql_stmt,{'crseID':courseID,'studentID':studentID})
+
+                events= []
+
+                for calEvName,evDate in conn.cursor:
+                    event ={}
+                    event['evDate']  = evDate
+                    event['calEvName'] = calEvName
+                    events.append(event)
+                
+                return make_response({'success':events},200)
+
+            
+            else:
+                errors = {
+                    'errors': form_errors(form)
+                }
+                conn.close_cursor_and_connection()
+                return make_response(errors,400)
+            
+        
+        """GET request"""
+        list_of_courses = [] # stores tuple with course title and course ID
+
+            # populate the drop down boxes with the  course titles
+        """Write SQL to select course based of student enrollment Insert below"""
+        conn.cursor.execute("")
+        for cName, cID in conn.cursor:
+            list_of_courses.append((cName,cID))
+        
+        form.CourseOptions.choices = list_of_courses
+
+        # return rendered template with form
+
+
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+    
+    except Exception as ex:
+        return make_response({'error':'An error occurred when attempting to retreive calendar Events'},503)
+    
 
 
 
