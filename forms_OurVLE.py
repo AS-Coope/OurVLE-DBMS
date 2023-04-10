@@ -16,6 +16,7 @@ starts from the the front end.
 
 class Registration(FlaskForm):
     Fname  = StringField('FirstName', validators=[InputRequired()])
+    mName = StringField('MiddleName',validators=[InputRequired()])
     Lname = StringField('LastName', validators=[InputRequired()])
     Passowrd = PasswordField('Password',validators=[InputRequired()])
 

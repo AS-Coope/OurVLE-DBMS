@@ -110,12 +110,13 @@ def login():
 
 
         
-@app.route('/employee-registration',methods=['GET', 'POST'])
+@app.route('registration/employee-registration',methods=['GET', 'POST'])
 def empRegister():
 
     form = LecturerRegistration()
     if request.method == 'POST'  and form.validate_on_submit():
         fName = form.Fname.data
+        mName = form.mName.data
         lName = form.Lname.data
         LectID = form.LectureID.data
         pwd = form.Passowrd.data
@@ -124,8 +125,8 @@ def empRegister():
 
         try:
             conn = connectionHandler()
-            sql_stmt = "INSERT into LECTURER (lID,Fname,Lname,lPassword) VALUES( %(lectID)s,  %(lectFname)s, %(lectLname)s,  %(lectpwd)s);"  # Used to secure SQL statements to prevent injection
-            conn.cursor.execute(sql_stmt,{'lectID':LectID, 'lectFname':fName,'lectLname':lName,'lectpwd':hashedPassword})
+            sql_stmt = "INSERT into LECTURER (lID,Fname, Mname,Lname,lPassword) VALUES( %(lectID)s,  %(lectFname)s, %(lectMname)s, %(lectLname)s,  %(lectpwd)s);"  # Used to secure SQL statements to prevent injection
+            conn.cursor.execute(sql_stmt,{'lectID':LectID, 'lectFname':fName,'lectMname':mName , 'lectLname':lName,'lectpwd':hashedPassword})
             conn.cursor.commit()
             conn.close_cursor_and_connection()
             return make_response({'success':'Your account has been created.'},201)
@@ -142,12 +143,13 @@ def empRegister():
 
         
 
-@app.route('/student-registration',methods=['GET', 'POST'])
+@app.route('registration/student-registration',methods=['GET', 'POST'])
 def studentRegister():
 
     form = StudentRegistration()
     if request.method == 'POST'  and form.validate_on_submit():
         fName = form.Fname.data
+        mName = form.mName.data
         lName = form.Lname.data
         stuID = form.StudentID.data
         pwd = form.Passowrd.data
@@ -156,8 +158,8 @@ def studentRegister():
         '''complete here'''
         try:
             conn = connectionHandler()
-            sql_stmt = "INSERT into Student (lID,Fname,Lname,sPassword) VALUES( %(sID)s,  %(Fname)s,%(Lname)s,  %(lectpwd)s);"  # Used to secure SQL statements to prevent injection
-            conn.cursor.execute(sql_stmt,{'lectID':stuID, 'Fname':fName,'Lname':lName,'sPassword':hashedPassword})
+            sql_stmt = "INSERT into Student (lID,Fname,Mname,Lname,sPassword) VALUES( %(sID)s,  %(Fname)s, %(Mname)s, %(Lname)s,  %(lectpwd)s);"  # Used to secure SQL statements to prevent injection
+            conn.cursor.execute(sql_stmt,{'lectID':stuID, 'Fname':fName, 'Mname': mName, 'Lname':lName,'sPassword':hashedPassword})
             conn.cursor.commit()
             conn.close_cursor_and_connection()
             return make_response({'success':'Your account has been created.'},201)
@@ -178,7 +180,7 @@ def studentRegister():
         Success: Informs the user that a particular course has been created
         error: Appropriate error message
     """
-@app.route('/create-course',methods=['GET','POST'])
+@app.route('course/create',methods=['GET','POST'])
 def createCourse():
 
     '''If the user is not signed in as an admin the person is not allowed to continue'''
@@ -216,7 +218,7 @@ def createCourse():
         Success: list of courses ad dictionary objects
         Error: Appropriate error message
     """
-@app.route('/get-courses',methods=['GET'])
+@app.route('courses/',methods=['GET'])
 def getCourses():
     try:
         conn = connectionHandler()
@@ -242,7 +244,7 @@ def getCourses():
     
 
     
-@app.route('/get-course/<studentId>',methods=['GET'])
+@app.route('/courses/<studentId>',methods=['GET'])
 def getStudentCourse(studentId):
 
     try:
@@ -281,7 +283,7 @@ Returns:
 """
 
 
-@app.route('/LecturerCourses/<lectID>',methods=['GET'])
+@app.route('courses/<lectID>',methods=['GET'])
 def lecturerCourses(lectID):
     try:
         conn = connectionHandler()
@@ -309,7 +311,7 @@ def lecturerCourses(lectID):
                               ' Please try again if the issue persist please contact your sysem administrator'},503)
 
 
-@app.route('/assigned-Lecturer-to-course',methods=['GET','POST'])
+@app.route('course/assign',methods=['GET','POST'])
 def assignLecturer(lectID):
     form = AssignLecturerToCourse()
     
@@ -363,7 +365,7 @@ def assignLecturer(lectID):
 
 
 
-@app.route('/course-registration',methods=['GET','POST'])
+@app.route('course/registration',methods=['GET','POST'])
 def courseRegistration():
 
     form = CourseRegistration()
@@ -427,7 +429,7 @@ def courseRegistration():
         return make_response({'error':'An error occurred when attempting to update the course information'},503)
 
 
-@app.route('/get-students-for-course',methods=['GET','POST'])
+@app.route('course/enrollment',methods=['GET','POST'])
 def getRegisteredStudents():
 
     form  = GetRegisteredStudents()
@@ -477,7 +479,7 @@ def getRegisteredStudents():
     except Exception as ex:
         return make_response({'error':'An error occurred when attempting to retrieve student information'},503)
     
-@app.route('/get-calendar-events',methods=['GET','POST'])
+@app.route('course/calendarEvents',methods=['GET','POST'])
 def getEvents():
 
     form  = GetCalendarEvents()
@@ -533,7 +535,7 @@ def getEvents():
     
 
 
-@app.route('/get-calendar-events-student',methods=['GET','POST'])
+@app.route('course/calendarEvents/<studentID>',methods=['GET','POST'])
 def getStudentEvents():
     form = getStudentCalendarEvents()
 
@@ -589,6 +591,54 @@ def getStudentEvents():
     except Exception as ex:
         return make_response({'error':'An error occurred when attempting to retreive calendar Events'},503)
     
+
+
+@app.route('/course/calendarEvents/create',methods=['GET','POST'])
+def createCalendarEvent():
+    pass
+
+@app.route('/course/forum',methods=['GET'])
+def getForums():
+    pass
+
+@app.route('/course/forum/create',methods=['GET','POST'])
+def createForum():
+    pass
+
+@app.route('course/forum/thread',methods=['GET'])
+def getForumThread():
+    pass
+
+@app.route('course/forum/thread/create',methods=['GET','POST'])
+def createThread():
+    pass
+
+
+@app.route('/course/content',methods=['GET','POST'])
+def getCourseContent():
+    pass
+
+@app.route('/course/content/section/add',methods=['GET','POST'])
+def addContent():
+    pass
+
+@app.route('/course/assignment',method=['GET'])
+def getAssignments():
+    pass
+
+@app.route('/course/assignment/submit',methods = ['GET','POST'])
+def submitAssignment():
+    pass
+
+@app.route('/course/assignment/grade',methods = ['GET','POST'])
+def gradeAssignment():
+    pass
+
+
+@app.route('course/report', method =['GET'])
+def repot():
+    pass
+
 
 
 
