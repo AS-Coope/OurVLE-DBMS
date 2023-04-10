@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, TextAreaField, SelectField
+from wtforms import StringField, PasswordField, TextAreaField, SelectField, DateField,TimeField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms.validators import InputRequired, Email,DataRequired
 
@@ -72,19 +72,30 @@ class GetRegisteredStudents(FlaskForm):
 class GetCalendarEvents(FlaskForm):
     CourseOptions = SelectField('Course',validate_choice=True)
 
-class getStudentCalendarEvents():
+class getStudentCalendarEvents(FlaskForm):
     student = StringField('studentID',validators=[InputRequired()])
     CourseOptions = SelectField('Course',validate_choice=True)
 
 
+class createCalendarEvent(FlaskForm):
+    eventDate= DateField('EventDate',validators=[InputRequired()])
+    eventTime = TimeField('EventTime',validators=[InputRequired()])
+    eventName = StringField('EventName',validators=[InputRequired()])
+    eventContent = StringField('EventContent') # This field is not made mandatory 
 
-
+    # the following may help to hide the cID on the front end https://stackoverflow.com/questions/27071284/hiding-a-form-group-with-flask-jinja2-and-wtforms
+    courseID = StringField('cID',validators=[InputRequired()]) # this field should be hidden to the user
+        #calEvNo Assigned by DB
     
     
 class DiscussionForum(FlaskForm):
-    # Discussion forum ID (dfID) assigned by DB
-    #cID assigned by the API
-    ForumName = StringField('ForumName',validators=[InputRequired()])
+    # Discussion forum ID (forumNo) assigned by DB
+    #cID assigned by the hidden field in version2 of the API
+    ForumTitle = StringField('ForumTitle',validators=[InputRequired()])
+    ForumMsg = StringField('ForumMsg',validators=[InputRequired()])
+
+
+
 
 class DiscussionThread(FlaskForm):
     #dtID assigned by DB
