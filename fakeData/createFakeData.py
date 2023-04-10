@@ -147,10 +147,10 @@ with open('student_data.csv', 'w',newline='') as csvfile:
 #Create student data csv file with courses in a single list
 with open('student_data2.csv', 'w',newline='') as csvfile:
     writer = csv.writer(csvfile)
-    writer.writerow(['StudentID', 'AccountNumber', 'AccountType', 'FirstName','MiddleName', 'LastName', 'Email','Password','Department','CoursesTaken' ])
+    writer.writerow(['StudentID', 'AccountNumber', 'AccountType', 'FirstName','MiddleName', 'LastName', 'Email','Password','DepartmentID','CoursesTaken' ])
     with open('student_courses.csv', 'w',newline='') as csvfile1:
         writer1 = csv.writer(csvfile1)
-        writer.writerow(['StudentID', 'CourseID'])
+        writer1.writerow(['StudentID', 'CourseID'])
         for i in range(len(sFuName)):
             writer.writerow([sIDs[i],sAccNos[i],sAccTypes[i],sfirstNames[i],smiddleNames[i],slastNames[i],semails[i],sPasswords[i],sDeptID[i],sCourses[i]])
             if len(sCourses[i]) == 1:
