@@ -96,7 +96,7 @@ def login():
                     'errors': form_errors(form)
                 }
                 conn.close_cursor_and_connection()
-                return make_response(errors,400)
+                return make_response(errors,422)
                 
         except mysql.connector.Error as err:
             conn.close_cursor_and_connection()
@@ -407,7 +407,7 @@ def courseRegistration():
                     'errors': form_errors(form)
                 }
                 conn.close_cursor_and_connection()
-                return make_response(errors,400)
+                return make_response(errors,422)
 
         
 
@@ -459,7 +459,7 @@ def getRegisteredStudents():
                     'errors': form_errors(form)
                 }
                 conn.close_cursor_and_connection()
-                return make_response(errors,400)                
+                return make_response(errors,422)                
     
 
         if request.method == 'GET':
@@ -514,7 +514,7 @@ def getEvents():
                     'errors': form_errors(form)
                 }
                 conn.close_cursor_and_connection()
-                return make_response(errors,400)
+                return make_response(errors,422)
 
         
         
@@ -574,7 +574,7 @@ def getStudentEvents():
                     'errors': form_errors(form)
                 }
                 conn.close_cursor_and_connection()
-                return make_response(errors,400)
+                return make_response(errors,422)
             
         
         """GET request"""
@@ -674,6 +674,10 @@ def getForums(courseID):
 
         discuss_List= []
 
+        if not conn.close_cursor:
+             conn.close_cursor_and_connection()
+             return make_response({'Info': []},204)
+
         for forumNo, forumTitle, forumMessage in conn.cursor:
             discussion ={}
             discussion['forumNo'] =  forumNo
@@ -711,7 +715,7 @@ def createForum(courseID):
                     'errors': form_errors(form)
                 }
                 conn.close_cursor_and_connection()
-                return make_response(errors,400)
+                return make_response(errors,422)
             
             sql_stmt_getID = "SELECT forumNo FROM DiscussionForumContent WHERE forumTitle = %(forumTitle)s AND forumMessage = %(forumMessage)s;"
             conn.cursor.execute(sql_stmt_getID,{'forumTitle':title,'forumMessage':msg})
@@ -793,7 +797,7 @@ def createThread(forumNo):
                     'errors': form_errors(form)
                 }
                 conn.close_cursor_and_connection()
-                return make_response(errors,400)
+                return make_response(errors,422)
 
         if request.method == 'GET':
             pass
@@ -809,11 +813,131 @@ def createThread(forumNo):
         return make_response({'error':'An error occurred when attempting to create a thread'},503)
 
 
-@app.route('/course/content',methods=['GET','POST'])
-def getCourseContent():
-    pass
+@app.route('/course/content/<coruseID>',methods=['GET'])
+def getCourseContent(courseID):
+    
+    try:
+        conn = connectionHandler()
+        sql_stmt = "SELECT * FROM SectionItem WHERE secItemNo IN (SELECT secItemNo FROM SectItemOfSection WHERE secNo IN (SELECT secNo FROM SecOfCourse WHERE cID = %(cID)s));"
+        conn.cursor.execute(sql_stmt,{'cID':courseID})
 
-@app.route('/course/content/section/add',methods=['GET','POST'])
+        contents  =[]
+
+        if not conn.cursor:
+            conn.close_cursor_and_connection()
+            return make_response({'Info': []},204)            
+
+        for conName, conType, conDec in conn.cursor:
+            content = {}
+            content['name'] = conName
+            content['conType'] = conType
+            content['conDec'] = conDec
+
+            contents.append(content)
+        
+        conn.close_cursor_and_connection()
+        return make_response({'success':contents},200)
+
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+    
+    except Exception as ex:
+        conn.close_cursor_and_connection()
+        return make_response({'error':'An error occurred when attempting to get course content'},503)
+
+
+@app.route('/course/section/<courseID>/<sectionID>',methods=["GET"])
+def getSectionContent(courseID,sectionID):
+    try:
+        conn = connectionHandler()
+        """The query below is partially completed as is the for loop below it.
+            As it is now it returns the list of section items it needs to return the list of all the 
+            DIFFERENT types of section Items
+            -R. Senior
+            """
+        sql_stmt = "SELECT * FROM SectionItem WHERE secItemNo IN (SELECT secItemNo FROM SectItemOfSection WHERE secNo = %(sINo)s IN (SELECT secNo FROM SecOfCourse WHERE cID = %(cID)s));"
+        conn.cursor.execute(sql_stmt,{'sINo':sectionID,'cID':courseID})
+        secContent = []
+        
+        if not conn.cursor:
+            conn.close_cursor_and_connection()
+            return make_response({'Info': []},204)               
+        
+        for conName, conType, conDec in conn.cursor:
+            content = {}
+            content['name'] = conName
+            content['conType'] = conType
+            content['conDec'] = conDec
+
+            secContent.append(content)
+            
+        conn.close_cursor_and_connection()
+        return make_response({'success':secContent},200)
+        
+
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+    
+    except Exception as ex:
+        conn.close_cursor_and_connection()
+        return make_response({'error':'An error occurred when attempting to get course sections'},503)
+
+
+@app.route('/course/section/add/<courseID>',methods=['GET','POST'])
+def addSection(courseID):
+    try:
+        conn = connectionHandler()
+        form = createSection()
+
+        if request.method == 'POST':
+            if form.validate():
+                name = form.name.data
+                cID = form.courseID.data
+
+                sql_stmt = "INSERT INTO Section(secNmae) VALUES(%(sn)s);"
+                conn.cursor.execute(sql_stmt,{'sn':name})
+                conn.cursor.commit()
+
+                sql_stmt_id = "SELECT secid FROM Section WHERE secName = %(sn)s;"
+                conn.cursor.execute(sql_stmt_id,{'sn':name})
+
+                id = conn.cursor.fetchone()
+
+                sql_stmt_insert = "INSERT INTO SecOfCourse(secNo, cID) VALUES(%(id)s,%(cID)s)"
+                conn.cursor.execute(sql_stmt_insert,{'id':id,'cID':cID})
+                conn.cursor.commit()
+
+                conn.close_cursor_and_connection()
+                return make_response({'success':'Section created'},200)
+            
+        if request.method == 'GET':
+            form.courseID.data = courseID
+
+            """return rendered template with form"""
+        else:
+                errors = {
+                    'errors': form_errors(form)
+                }
+                conn.close_cursor_and_connection()
+                return make_response(errors,422)     
+
+        if request.method == 'GET':
+            form.courseID.data = courseID
+            pass
+
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+    
+    except Exception as ex:
+        conn.close_cursor_and_connection()
+        return make_response({'error':'An error occurred when attempting to add course section'},503)
+
+    
+
+@app.route('/course/section/content/add',methods=['GET','POST'])
 def addContent():
     pass
 

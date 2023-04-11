@@ -95,13 +95,17 @@ class DiscussionForum(FlaskForm):
     ForumMsg = StringField('ForumMsg',validators=[InputRequired()])
 
 
-
-
 class DiscussionThread(FlaskForm):
     #dtID assigned by DB
     #dfID assigned by API
     title = StringField('ThrdName',validators=[InputRequired()])
     Post = StringField('PostName',validators=[InputRequired()])
+
+
+class createSection(FlaskForm):
+    name = StringField('secName',validators=[InputRequired()])
+        # the following may help to hide the cID on the front end https://stackoverflow.com/questions/27071284/hiding-a-form-group-with-flask-jinja2-and-wtforms
+    courseID = StringField('cID',validators=[InputRequired()]) # this field should be hidden to the user
 
 
     
