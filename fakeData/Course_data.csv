@@ -1,0 +1,249 @@
+CourseCode,CourseName,DepartmentID
+EDMC1001,Algebra,1004
+EDMC1002,Geometry,1004
+EDME1103,Content and Pedagogy for Selected Topics in Mathematics,1004
+EDPS1003,Psychological Issues in the Classroom,1004
+EDTL1020,Introduction to Teaching and Learning,1004
+EDCU2013,Introduction To Curriculum Studies,1004
+EDEA2305,Action Research for School and Classroom Managers,1004
+EDGC2010,Orientation to Guidance and Counselling,1004
+EDHE2912,The Nature Of History,1004
+EDLA2103,The Teaching Of Literature,1004
+EDLA2106,The Language-Structure Content Of English Teaching,1004
+EDLS2605,"Learner Processes, Teacher Processes & the Development of Literacy",1004
+EDMC2201,Introductory Calculus,1004
+EDMC2203,Analytical Geometry and Trigonometry,1004
+EDMC2214,The Nature and Scope of Mathematics,1004
+EDMC2216,Analysis & Teaching of Math,1004
+EDME2006,Classroom Testing & Evaluation (Basic),1004
+EDME2202,Probability & Statistics,1004
+EDPS2003,Motivation and the Teacher,1004
+EDRS2007,Research Design in Education,1004
+EDSS2903,Enquiry Methods in Teaching Social Studies,1004
+EDSS2904,Practice in Planning Learning Experiences for Social Studies,1004
+EDTK2025,Introduction To Computer Technology in Education,1004
+EDAR3808,Art and Drama in Education,1004
+EDEA3304,Management Of Human Resources & Interpersonal Relations,1004
+EDEA3306,School and Classroom Management A,1004
+EDEA3308,Principles & Practices of School Finance,1004
+EDEA3316,Fieldwork/Practicum (Educational Administration),1004
+EDEA3320,The Study,1004
+EDHE3905,Teaching History in Secondary Schools,1004
+EDIT3818,Methodologies for Teaching Info Technology & Computer Science,1004
+EDIT3822,"Instructional Website Design, Development & Integration into Curriculum",1004
+EDLA3104,Literature for Children in the Primary School,1004
+EDLA3106,Content and Pedagogy for CXC English Language A,1004
+EDLA3109,Teaching the Structure of English,1004
+EDLS3603,Advanced Study Of Assessment Of Literacy,1004
+EDMA3206,Investigations and Problem Solving,1004
+EDMC3201,Linear Algebra,1004
+EDMC3204,Abstract Algebra,1004
+EDRS3019,Report,1004
+EDSC3410,Sociology of Science Teaching and Learning,1004
+EDSC3417,Introduction To Secondary Science Practicals,1004
+EDSS3903,Secondary Schools Social Studies Research and Selection,1004
+EDSS3911,Teaching Geography in the Caribbean Classroom,1004
+EDTK3004,Educational Technology,1004
+EDTL3018,Culminating school-based experience: Clinical Practice,1004
+EDTL3020,Pre-Practicum,1004
+EDTL3021,Field Study,1004
+EDME1103,Content and Pedagogy for Selected Topics in Mathematics,1004
+EDTL1021,Planning for Teaching and Learning,1004
+EDEA2304,Introduction To Educational Administration,1004
+EDHE2908,Local and Community Studies,1004
+EDIT3017,Issues in Information Technology,1004
+EDIT3821,Educational Software Design and Development,1004
+EDIT3823,Teaching in a Networked Environment,1004
+EDIT3825,Assessing Information Technology,1004
+EDLA2105,Language Structure Content Of English Teaching in the Caribbean,1004
+EDLS2606,"Text, Analysis Of Discourse And The Acquisition Of Literacy",1004
+EDLS2607,Research Perspectives in the Study of Literacy,1004
+EDMC2213,Children Learning Mathematics,1004
+EDME2204,Discrete Mathematics,1004
+EDPH2024,Issues and Perspectives in Education,1004
+EDSC2407,Teaching Methodologies in Science,1004
+EDSE2712,Introduction to the Learner in Difficulty,1004
+EDSS2906,Basic Geographic Skills for the Social Studies Teacher,1004
+EDEA3305,Special Problems in School Administration,1004
+EDEA3307,School and Classroom Management B,1004
+EDEA3320,The Study,1004
+EDHE3904,Assessment of Achievement in History,1004
+EDHE3908,Selecting Methods & Resources for Instruction in Caribbean and World History,1004
+EDLA3103,The Teaching of English Literature in the Secondary School,1004
+EDLA3106,Content and Pedagogy for CXC English Language A,1004
+EDLA3110,Writing in the Secondary School,1004
+EDLA3111,Teaching Caribbean Poetry,1004
+EDLS3603,Advanced Study Of Assessment Of Literacy,1004
+EDLS3612,Writing as Literacy Development in the Primary School,1004
+EDMC3020,Calculus II,1004
+EDMC3202,Assessing Mathematics Learning,1004
+EDME3006,Classroom Testing and Evaluation Advance,1004
+EDME3205,Teaching Mathematics in Grades 10 and 11,1004
+EDRS3008,Research Methods (II),1004
+EDRS3019,Report,1004
+EDSC3403,Assessment in Science Teaching,1004
+EDSC3408,Environmental Education,1004
+EDSC3411,Science Teaching and the History of Science,1004
+EDSS3908,The Role Of Soc. Studies/Geo. In Secondary Education,1004
+COMP1126,Intro to Computing I,1000
+COMP1127,Intro to Computing II,1000
+COMP1161,Object-oriented Programming,1000
+COMP1210,Math for Computing,1000
+COMP1220,Computing and Society,1000
+COMP2201,Discrete Mathematics for Computer Science,1000
+COMP2211,Analysis of Algorithms,1000
+COMP2120,Digital Logic Design,1000
+COMP2140,Software Engineering,1000
+COMP2171,Object Technology,1000
+COMP2190,Net-Centric Computing,1000
+COMP2340,Computer Organisation,1000
+COMP3101,Operating Systems,1000
+COMP3220,Introduction to Artificial Intelligence,1000
+COMP3161,Database Management Systems,1000
+COMP3652,Language Processors,1000
+COMP3702,Theory of Computation,1000
+COMP3801,Real-Time Embedded Systems,1000
+COMP3901,Group Project,1000
+COMP3911,Internship in Computing I,1000
+COMP3912,Internship in Computing II,1000
+INFO3105,Computer Systems Administration,1000
+INFO3110,Information Systems in Organisations,1000
+INFO3155,Computer & Network Security for IT,1000
+COMP3161,Database Management Systems,1000
+INFO3170,User Interface Design for IT,1000
+INFO3180,Dynamic Web Development II,1000
+INFO3435,e-Commerce,1000
+SWEN2165,Requirement Engineering,1000
+SWEN3130,Software Project Management,1000
+SWEN3145,Software Modeling,1000
+SWEN3165,Software Testing,1000
+SWEN3185,Software Reliability and Formal Methods,1000
+SWEN3920,Capstone Project (Software Engineering),1000
+MATH6623, Numerical Methods for Differential Equations,1001
+STAT6632, Multivariate Statistical Analysis,1001
+STAT6630, Introduction of Stochastic Processes,1001
+STAT6631, The Analysis of Time Series,1001
+STAT6631, The Analysis of Time Series,1001
+MATH6629, Mechanics of Interacting Particles,1001
+MATH6633, A Course in Algebraic Number Theory,1001
+MATH6634, A course in the History of Mathematics,1001
+MATH6628, Differential Geometry,1001
+MATH6622, Differential Equations,1001
+MATH6635, Complex Analysis and Applications,1001
+ECON1000,Principles of Economics I,1003
+ECON1003,Mathematics for Social Sciences I,1003
+ECON1004,Mathematics for Social Sciences II,1003
+ECON1005,Introduction to Statistics,1003
+ECON1012,Principles of Economics II,1003
+ECON2000,Intermediate Microeconomics I,1003
+ECON2001,Intermediate Microeconomics II,1003
+ECON2002,Intermediate Macroeconomics I,1003
+ECON2003,Intermediate Macroeconomics II,1003
+ECON2005,Social & Economic Accounting,1003
+ECON2008,Statistical Methods I,1003
+ECON2009,Statistical Methods II,1003
+ECON2010,Statistical Computing,1003
+ECON2014,Sampling Methods for Business and Social Sciences,1003
+ECON2015,Matrix Algebra for Business and Social Sciences,1003
+ECON2016,Calculus Social Sciences,1003
+ECON2020,Caribbean Economy,1003
+ECON2023,International Economic Relations I,1003
+ECON2024,International Economic Relations II,1003
+ECON2025,Economics of Sport,1003
+ECON3003,Game theory,1003
+ECON3005,Monetary Theory and Policy,1003
+ECON3006,International Trade Theory & Policy,1003
+ECON3007,International Finance,1003
+ECON3008,History of Economic Thought,1003
+ECON3010,Finance & Development,1003
+ECON3011,Economics of Financial Institutions,1003
+ECON3016,Public Finance I,1003
+ECON3030,Selected Topics in Economics,1003
+ECON3031,Probability and Distribution Theory for Business & Social Sciences,1003
+ECON3032,Statistical Estimation and Inference,1003
+ECON3034,Environmental Economics,1003
+ECON3037,Operations Research I,1003
+ECON3040,Non-Parametric Statistics,1003
+ECON3049,Econometrics,1003
+ECON3050,Applied Econometrics,1003
+ECON3051,Development Economics,1003
+ECON3072,Financial Markets,1003
+ECON3073,Credit Analysis and Lending,1003
+MATH1141, Introductory Linear Algebra & Analytic Geometry,1001
+MATH1142, Calculus I,1001
+MATH1151, Calculus II,1001
+MATH1152, Introduction to Formal Mathematics,1001
+MATH2401, Elements of Mathematical Analysis,1001
+MATH2410, A First Course in Linear Algebra,1001
+MATH2404, Introduction to Probability Theory,1001
+MATH2411, Introduction to Abstract Algebra,1001
+MATH2403, Multivariable Calculus,1001
+MATH2420, Ordinary Differential Equations,1001
+MATH3155, Complex Variables,1001
+MATH3412, Advanced Linear Algebra,1001
+MATH3402, A course on Metric Spaces & Topology,1001
+MATH3423, Research Project,1001
+STAT3001, Regression Analysis,1001
+MATH3403, Some Topics in Functional Analyses,1001
+MATH3401, Introduction to the Theory of Integration,1001
+MATH3411, Advanced Abstract Algebra,1001
+MATH3404, Introduction to Differential Geometry with Maple,1001
+STAT3002, Time Series,1001
+MATH3414,Selected Topics in Operations Research,1001
+MATH3421, Partial Differential Equations,1001
+MATH3422, Mathematical Modelling,1001
+MATH3424, Numerical Methods,1001
+ECNG1000,Electrical Circuits,1002
+PHYS1411,Mechanics,1002
+PHYS1412,"Waves, Optics and Thermodynamics",1002
+PHYS1421,Electricity and Magnetism,1002
+PHYS1422,Modern Physics,1002
+ELNG1101,Physics for Engineers,1002
+ELET1500,Electrical Circuit Analysis And Devices,1002
+MATH1185,Mathematics for Scientists and Engineers,1001
+ELET1405,Practices in Basic Electronics,1002
+ECNG1012,Engineering Science and Technology,1002
+ECNG1009,Introduction to Programming,1002
+MDPH6160,Radiation Biology and Protection,1002
+MDPH6150,Biomedical Statistics and Informatics,1002
+MDPH6140,Basic Medical Electronics and Instrumentation,1002
+MDPH6130,Fundamentals of Radiation Physics and Dosimetry,1002
+MDPH6120,Physics of the Human Body,1002
+MDPH6110,Anatomy and Physiology for Medical Physicists,1002
+MDPH6280,Radiation Safety and Protection,1002
+MDPH6270,"Radiation Therapy 2: Physics, Equipment and Applications",1002
+MDPH6260,"Radiation Therapy 1: Physics, Equipment and Applications",1002
+MDPH6190,Radiation Biology,1002
+MDPH6180,Biomedical Statistics,1002
+MDPH6170,Information Technology and Equipment in Radiation Medicine,1002
+MDPH6135,Fundamentals of Clinical Radiation Physics and Dosimetry,1002
+MDPH6115,Anatomy and Physiology for Clinical Medical Physicists,1002
+MDPH6215,"Diagnostic Radiology Physics, Equipment and Applications",1002
+MDPH6230,"Nuclear Medicine: Physics, Equipment and Applications",1002
+MDPH6240,"Non-Ionization Radiation: Physics, Equipment and Applications",1002
+PHYS2396,Computer Applications in Physics,1002
+ELET2405,Practices in Electronics Designs 1,1002
+ELET2415,Practices in Basic Electronics 2,1002
+ELET2460,Signals and Systems,1002
+ELET2470,Electric Circuit Analysis,1002
+ELET2480,Communication Systems,1002
+ELET2410,Analysis and Designs of Analog Circuits,1002
+ELET2530,Digital Electronics and Systems,1002
+ELET2450,Embedded Systems,1002
+ELET2420,Introduction to Semiconductor Devices,1002
+PHYS2561,Fundamentals of Materials Science,1002
+PHYS2671,Fluid Dynamics,1002
+PHYS2296,Physics of the Human Body,1002
+PHYS2200,Practices in Medical Physics 1,1002
+PHYS2386,Electromagnetism and Optics,1002
+PHYS2351,Quantum Mechanics and Nuclear Physics,1002
+PHYS2300,General Physics Lab 1,1002
+PHYS2600,Fluid Dynamics and Environmental Physics Laboratory,1002
+PHYS2500,Materials Science Laboratory 1,1002
+ELET2210,Speech Processing,1002
+ELET2570,Microprocessors and Computer Architecture,1002
+PHYS2000,Fundamentals of Energy Statistics,1002
+PHYS2701,Essentials of Renewable Energy Technologies and Solutions,1002
+PHYS3000,Energy Information Management,1002
+MDPH6240,"Non-Ionization Radiation: Physics, Equipment and Applications",1002
+MDPH6230,"Nuclear Medicine: Physics, Equipment and Applications",1002
