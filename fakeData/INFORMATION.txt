@@ -51,3 +51,56 @@ LecturerID,AccountNumber,AccountType,FirstName,MiddleName,LastName,Email,Passwor
 300000003,LEC300000003,Lecturer,Jane,Darrell,Ibarra,Jane.Ibarra@uwimona.uwi.jm,UW0Djnzr^o,"['MDPH6190', 'EDPS1003']"
 
 		iii)'lecturer_courses.csv': Lists all the lecturers' IDs and the courses they teach Indivdually. 
+1) The 'createFakeData.py' file was used to generate the fake data using fakerjs pyhton version.
+(Documemntation on how to use faker: https://faker.readthedocs.io/en/master/index.html)
+
+2) Data:
+	-# of Students = 112500
+	-# of Lecturers = 1250
+	-# of Courses = 250
+	-# of Admins = 100
+	-# of Departments = 5
+
+3) Data Formats:
+
+	a) Students: 
+
+		i)'student_data.csv': Courses are listed individually
+ 		
+			-Format:
+StudentID,AccountNumber,AccountType,FirstName,MiddleName,LastName,Email,Password,DepartmentID,Course1,Course2,Course3,Course4,Course5,Course6
+
+		
+			-Example: 
+620130010,STU620130010,Student,Melissa,Collin,Austin,Melissa.Austin@mymona.uwi.jm,W%W0OuAWg1,1004,PHYS2396,EDLA3110,EDLA2106
+
+
+		ii)'student_data2.csv': Courses are in a single list
+			-Example: 
+620130010,STU620130010,Student,Melissa,Collin,Austin,Melissa.Austin@mymona.uwi.jm,W%W0OuAWg1,1004,"['PHYS2396', 'EDLA3110', 'EDLA2106']"
+
+		iii)'student_courses.csv': Lists all the students' IDs and the courses they are enrolled in Indivdually. 
+
+
+	b) Lecturers: 
+		
+		i)'lecturer_data.csv': Courses are listed individually
+
+			-Format:
+LecturerID,AccountNumber,AccountType,FirstName,MiddleName,LastName,Email,Password,Course1,Course2,Course3,Course4,Course5
+
+			-Example:
+300000003,LEC300000003,Lecturer,Jane,Darrell,Ibarra,Jane.Ibarra@uwimona.uwi.jm,UW0Djnzr^o,MDPH6190,EDPS1003
+
+
+		
+		ii)'lecturer_data2.csv': Courses are in a single list
+
+			-Format:
+LecturerID,AccountNumber,AccountType,FirstName,MiddleName,LastName,Email,Password,CoursesTaught
+
+
+			-Example:
+300000003,LEC300000003,Lecturer,Jane,Darrell,Ibarra,Jane.Ibarra@uwimona.uwi.jm,UW0Djnzr^o,"['MDPH6190', 'EDPS1003']"
+
+		iii)'lecturer_courses.csv': Lists all the lecturers' IDs and the courses they teach Indivdually. 
