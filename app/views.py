@@ -1,9 +1,10 @@
-from flask import Flask, request, make_response,jsonify,session
-from flask_login import current_user, login_user,login_required, logout_user
-from werkzeug.security import check_password_hash
-from passlib.hash import sha256_crypt
+from app import app
+from flask import Flask, render_template, request, make_response,jsonify,session
+# from flask_login import current_user , login_user,login_required, logout_user
+# from werkzeug.security import check_password_hash
+# from passlib.hash import sha256_crypt
 import mysql.connector
-from forms_OurVLE import *
+# from app.forms_OurVLE import *
 
 
 
@@ -27,8 +28,6 @@ USER = 'enter user'
 PASSWORD = 'enter password here'
 HOST = 'localhost'
 DATABASE = 'db_name'
-
-app = Flask(__name__)
 
 
 class connectionHandler:
@@ -60,7 +59,7 @@ def index():
     """This displays the index page for OurVLE it shows the courses 
         to the guess user
     """
-    pass
+    return render_template('base.html')
 
 
 @app.route('/login',methods =['POST','GET'])
