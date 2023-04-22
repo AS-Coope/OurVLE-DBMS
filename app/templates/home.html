@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <h1 class="display-4 text-center mb-4">Returning to the Site?</h1>
+                    <img src="https://img.freepik.com/free-vector/sign-page-abstract-concept-illustration_335657-3875.jpg?w=826&t=st=1681955486~exp=1681956086~hmac=8154846631909497dc09fa9fd3822bffba97d13d08259da61262b4fb8b74cba5" class="img-fluid mb-4" style="max-height: 300px; width: auto;" alt="Login Image">
+                    <a href="{{ url_for('login2') }}" class="btn btn-primary btn-lg btn-block">Login</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <h1 class="display-4 text-center mb-4">First Time on the Site?</h1>
+                    <img src="https://img.freepik.com/free-vector/protective-glass-counters_23-2148541569.jpg?w=826&t=st=1681957013~exp=1681957613~hmac=c66e08a16956f25fccf77add5cd6ad1b2204af0f1ab2f6172993af8abd105bab" class="img-fluid mb-4" style="max-height: 300px; width: auto;" alt="Register Image">
+                    <a href="{{ url_for('reg') }}" class="btn btn-primary btn-lg btn-block">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

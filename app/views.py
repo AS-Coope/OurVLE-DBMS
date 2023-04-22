@@ -1,10 +1,11 @@
 from app import app
-from flask import Flask, render_template, request, make_response,jsonify,session
+import os
+from flask import Flask, render_template, request, make_response,jsonify,session, flash, send_from_directory
 # from flask_login import current_user , login_user,login_required, logout_user
 # from werkzeug.security import check_password_hash
 # from passlib.hash import sha256_crypt
 import mysql.connector
-# from app.forms_OurVLE import *
+from app.forms_OurVLE import Login
 
 
 
@@ -59,7 +60,7 @@ def index():
     """This displays the index page for OurVLE it shows the courses 
         to the guess user
     """
-    return render_template('base.html')
+    return render_template('home.html')
 
 
 @app.route('/login',methods =['POST','GET'])
@@ -85,6 +86,7 @@ def login():
 
                         ''' Could also redirect the user to a home page here'''
 
+                        flash(f'Welcome, {form.userID.data}!', 'success')
                         return make_response({'result': "Succeessful Login"},200)
                 # The password is Incorrect
                 else:
@@ -107,9 +109,16 @@ def login():
     # If request is not post render the template for logging in below
     '''Complete here'''
 
+@app.route('/login2',methods =['POST','GET'])
+def login2():
+    return render_template('login.html')
+
+@app.route('/registration',methods =['POST','GET'])
+def reg():
+    return render_template('registration.html')
 
         
-@app.route('registration/employee-registration',methods=['GET', 'POST'])
+@app.route('/registration/employee-registration',methods=['GET', 'POST'])
 def empRegister():
 
     form = LecturerRegistration()
@@ -142,7 +151,7 @@ def empRegister():
 
         
 
-@app.route('registration/student-registration',methods=['GET', 'POST'])
+@app.route('/registration/student-registration',methods=['GET', 'POST'])
 def studentRegister():
 
     form = StudentRegistration()
@@ -179,7 +188,8 @@ def studentRegister():
         Success: Informs the user that a particular course has been created
         error: Appropriate error message
     """
-@app.route('course/create',methods=['GET','POST'])
+
+@app.route('/course/create',methods=['GET','POST'])
 def createCourse():
 
     '''If the user is not signed in as an admin the person is not allowed to continue'''
@@ -217,7 +227,7 @@ def createCourse():
         Success: list of courses ad dictionary objects
         Error: Appropriate error message
     """
-@app.route('courses/',methods=['GET'])
+@app.route('/courses/',methods=['GET'])
 def getCourses():
     try:
         conn = connectionHandler()
@@ -282,7 +292,7 @@ Returns:
 """
 
 
-@app.route('courses/<lectID>',methods=['GET'])
+@app.route('/courses/<lectID>',methods=['GET'])
 def lecturerCourses(lectID):
     try:
         conn = connectionHandler()
@@ -311,7 +321,7 @@ def lecturerCourses(lectID):
                               ' Please try again if the issue persist please contact your sysem administrator'},503)
 
 
-@app.route('course/assign',methods=['GET','POST'])
+@app.route('/course/assign',methods=['GET','POST'])
 def assignLecturer(lectID):
     form = AssignLecturerToCourse()
     
@@ -367,7 +377,7 @@ def assignLecturer(lectID):
 
 
 
-@app.route('course/registration',methods=['GET','POST'])
+@app.route('/course/registration',methods=['GET','POST'])
 def courseRegistration():
 
     form = CourseRegistration()
@@ -432,7 +442,7 @@ def courseRegistration():
         return make_response({'error':'An error occurred when attempting to update the course information'},503)
 
 
-@app.route('course/enrollment',methods=['GET','POST'])
+@app.route('/course/enrollment',methods=['GET','POST'])
 def getRegisteredStudents():
 
     form  = GetRegisteredStudents()
@@ -483,7 +493,7 @@ def getRegisteredStudents():
         conn.close_cursor_and_connection()
         return make_response({'error':'An error occurred when attempting to retrieve student information'},503)
     
-@app.route('course/calendarEvents',methods=['GET','POST'])
+@app.route('/course/calendarEvents',methods=['GET','POST'])
 def getEvents():
 
     form  = GetCalendarEvents()
@@ -541,7 +551,7 @@ def getEvents():
     
 
 
-@app.route('course/calendarEvents/<studentID>',methods=['GET','POST'])
+@app.route('/course/calendarEvents/<studentID>',methods=['GET','POST'])
 def getStudentEvents():
     form = getStudentCalendarEvents()
 
@@ -739,7 +749,7 @@ def createForum(courseID):
         conn.close_cursor_and_connection()
         return make_response({'error':'An error occurred when attempting to retreive forums'},503)
 
-@app.route('course/forum/thread/<forumID>',methods=['GET'])
+@app.route('/course/forum/thread/<forumID>',methods=['GET'])
 def getDiscussionThread(forumID):
 
     try:
@@ -765,7 +775,7 @@ def getDiscussionThread(forumID):
         return make_response({'error':'An error occurred when attempting to retreive forums'},503)
     
 
-@app.route('course/forum/thread/create/<forumNo>',methods=['GET','POST'])
+@app.route('/course/forum/thread/create/<forumNo>',methods=['GET','POST'])
 def createThread(forumNo):
     
     form = DiscussionForum()
@@ -936,26 +946,26 @@ def addSection(courseID):
 
     
 
-@app.route('/course/section/content/add',methods=['GET','POST'])
-def addContent():
-    pass
+# @app.route('/course/section/content/add',methods=['GET','POST'])
+# def addContent():
+#     pass
 
-@app.route('/course/assignment',method=['GET'])
-def getAssignments():
-    pass
+# @app.route('/course/assignment',method=['GET'])
+# def getAssignments():
+#     pass
 
-@app.route('/course/assignment/submit',methods = ['GET','POST'])
-def submitAssignment():
-    pass
+# @app.route('/course/assignment/submit',methods = ['GET','POST'])
+# def submitAssignment():
+#     pass
 
-@app.route('/course/assignment/grade',methods = ['GET','POST'])
-def gradeAssignment():
-    pass
+# @app.route('/course/assignment/grade',methods = ['GET','POST'])
+# def gradeAssignment():
+#     pass
 
 
-@app.route('course/report', method =['GET'])
-def repot():
-    pass
+# @app.route('/course/report', method =['GET'])
+# def repot():
+#     pass
 
 
 
