@@ -221,6 +221,7 @@ CREATE TABLE SubmissionEntries(
 -- creating SubmissionGrade table
 CREATE TABLE SubmissionGrade(
     studID int NOT NULL,
+    spID varchar(255) NOT NULL,
     grade int NOT NULL
 );
 
