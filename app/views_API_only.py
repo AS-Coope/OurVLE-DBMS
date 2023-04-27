@@ -161,15 +161,26 @@ Returns:
 def createCourse():
 
     course = request.json   
-    cCode = course['cCode']
-    cTitle = course['cTitle']
+    cID = course['cID']
+    cfName = course['cfname']
+    lID  = course['lID']
+    deptID =  course['deptID']
     try:
         conn = connectionHandler()
-        sql_stmt = "INSERT into Course (cName,cCode) VALUES(%(cc)s, %(ct)s);"
-        conn.cursor.execute(sql_stmt,{'cc':cCode,'ct':cTitle})
+        sql_stmt = "INSERT into Course (cID,cfName) VALUES(%(cID)s, %(cn)s);"        
+        conn.cursor.execute(sql_stmt,{'cID':cID,'cn':cfName})
+
+        sql_2 = "INSERT into LectOfCourse(cID, lID) VALUES(%(c)s,%(l)s);"
+        conn.cursor.execute(sql_2,{'c':cID,'l':lID})
+
+        sql_3 = "INSERT into CourseInDept(cID, deptID) VALUES(%(c)s,%(d)s);"
+        conn.cursor.execute(sql_3,{'c':cID,'d':deptID})
+        
         conn.connection.commit()
         conn.close_cursor_and_connection()
-        return make_response({'success':f'The course, {cTitle} has been created.'},201)
+        return make_response({'success':f'The course, {cfName} has been created.'},201)
+    
+
     except mysql.connector.Error as err:
         conn.close_cursor_and_connection()
         return make_response({'error': f"The following error occured: {err}"},500)
