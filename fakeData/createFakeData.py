@@ -28,6 +28,8 @@ cCodes = ["EDMC1001","EDMC1002","EDME1103","EDPS1003","EDTL1020","EDCU2013","EDE
 """ Dictionary to join course code to course name """
 course_dict = {cCodes[i]: cNames[i] for i in range(len(cCodes))}
 
+assgn_dict = {cCodes[i]: random.randint(2,5) for i in range(len(cCodes))} 
+
 
 departments = ["Department of Computing", "Department of Mathematics", "Department of Physics", "Department of Economics", "School of Education"]
 dID = [1000,1001,1002,1003,1004]
@@ -35,7 +37,7 @@ dID = [1000,1001,1002,1003,1004]
 """ Dictionary to join departmentID to Department name """
 dept_dict = {dID[i]: departments[i] for i in range(len(dID))}
 
-#Createing Course Information file
+#Creating Course Information file
 with open('Course_data.csv', 'w',newline='') as csvfile0:
     writer0 = csv.writer(csvfile0)
     writer0.writerow(['CourseCode','CourseName','DepartmentID'])
@@ -151,35 +153,17 @@ with open('student_data2.csv', 'w',newline='') as csvfile:
     with open('student_courses.csv', 'w',newline='') as csvfile1:
         writer1 = csv.writer(csvfile1)
         writer1.writerow(['StudentID', 'CourseID'])
-        for i in range(len(sFuName)):
-            writer.writerow([sIDs[i],sAccNos[i],sAccTypes[i],sfirstNames[i],smiddleNames[i],slastNames[i],semails[i],sPasswords[i],sDeptID[i],sCourses[i]])
-            if len(sCourses[i]) == 1:
-                writer1.writerow([sIDs[i],sCourses[i][0]])
-            if len(sCourses[i]) == 2:
-                writer1.writerow([sIDs[i],sCourses[i][0]])
-                writer1.writerow([sIDs[i],sCourses[i][1]])
-            if len(sCourses[i]) == 3:
-                writer1.writerow([sIDs[i],sCourses[i][0]])
-                writer1.writerow([sIDs[i],sCourses[i][1]])
-                writer1.writerow([sIDs[i],sCourses[i][2]])
-            if len(sCourses[i]) == 4:
-                writer1.writerow([sIDs[i],sCourses[i][0]])
-                writer1.writerow([sIDs[i],sCourses[i][1]])
-                writer1.writerow([sIDs[i],sCourses[i][2]])
-                writer1.writerow([sIDs[i],sCourses[i][3]])
-            if len(sCourses[i]) == 5:
-                writer1.writerow([sIDs[i],sCourses[i][0]])
-                writer1.writerow([sIDs[i],sCourses[i][1]])
-                writer1.writerow([sIDs[i],sCourses[i][2]])
-                writer1.writerow([sIDs[i],sCourses[i][3]])
-                writer1.writerow([sIDs[i],sCourses[i][4]])
-            if len(sCourses[i]) == 6:
-                writer1.writerow([sIDs[i],sCourses[i][0]])
-                writer1.writerow([sIDs[i],sCourses[i][1]])
-                writer1.writerow([sIDs[i],sCourses[i][2]])
-                writer1.writerow([sIDs[i],sCourses[i][3]])
-                writer1.writerow([sIDs[i],sCourses[i][4]])
-                writer1.writerow([sIDs[i],sCourses[i][5]])
+        with open('student_enrollment.csv', 'w',newline='') as csvfile2:
+            writer2 = csv.writer(csvfile2)
+            writer2.writerow(['StudentID', 'CourseID','AssigmentNo','Grade'])
+            for i in range(len(sFuName)):
+                writer.writerow([sIDs[i],sAccNos[i],sAccTypes[i],sfirstNames[i],smiddleNames[i],slastNames[i],semails[i],sPasswords[i],sDeptID[i],sCourses[i]])
+                for y in sCourses[i]:
+                    writer1.writerow([sIDs[i],y])
+                    numAsg = assgn_dict[y]
+                    for p in range(numAsg):
+                        writer2.writerow([sIDs[i],y,p+1,random.randint(0,100)])
+          
             
 
 print("Processing Lecturer Data...")
@@ -272,26 +256,9 @@ with open('lecturer_data2.csv', 'w',newline='') as csvfile:
         writer2.writerow(['LecturerID', 'CourseID'])
         for i in range(len(lFuName)):
             writer.writerow([lIDs[i],lAccNos[i],lAccTypes[i],lfirstNames[i],lmiddleNames[i],llastNames[i],lemails[i],lPasswords[i], lDeptID[i], lCourses[i]])
-            if len(lCourses[i]) == 1:
-                writer2.writerow([lIDs[i],lCourses[i][0]])
-            if len(lCourses[i]) == 2:
-                writer2.writerow([lIDs[i],lCourses[i][0]])
-                writer2.writerow([lIDs[i],lCourses[i][1]])
-            if len(lCourses[i]) == 3:
-                writer2.writerow([lIDs[i],lCourses[i][0]])
-                writer2.writerow([lIDs[i],lCourses[i][1]])
-                writer2.writerow([lIDs[i],lCourses[i][2]])
-            if len(lCourses[i]) == 4:
-                writer2.writerow([lIDs[i],lCourses[i][0]])
-                writer2.writerow([lIDs[i],lCourses[i][1]])
-                writer2.writerow([lIDs[i],lCourses[i][2]])
-                writer2.writerow([lIDs[i],lCourses[i][3]])
-            if len(lCourses[i]) == 5:
-                writer2.writerow([lIDs[i],lCourses[i][0]])
-                writer2.writerow([lIDs[i],lCourses[i][1]])
-                writer2.writerow([lIDs[i],lCourses[i][2]])
-                writer2.writerow([lIDs[i],lCourses[i][3]])
-                writer2.writerow([lIDs[i],lCourses[i][4]])
+            for x in range(len(lCourses[i])):
+                writer2.writerow([lIDs[i],lCourses[i][x]])
+            
     
 
 print("Processing Admin Data...")
