@@ -1,4 +1,4 @@
-from app import app
+
 from flask import Flask, render_template, request, make_response,jsonify,session
 # from flask_login import current_user , login_user,login_required, logout_user
 # from werkzeug.security import check_password_hash
@@ -24,10 +24,10 @@ print(sha256_crypt.verify("password", password))
 
 
 
-USER = 'enter user'
-PASSWORD = 'enter password here'
+USER = 'root'
+PASSWORD = '%(E#Jp^_Q/!!w'
 HOST = 'localhost'
-DATABASE = 'db_name'
+DATABASE = 'Project'
 
 
 class connectionHandler:
@@ -52,6 +52,7 @@ class connectionHandler:
         self.cursor.close()
         self.connection.close()
 
+app = Flask(__name__)
 
 
 @app.route('/', methods=['GET'])
@@ -62,54 +63,10 @@ def index():
     return render_template('base.html')
 
 
-@app.route('/login',methods =['POST','GET'])
-def login():
-  
-    form = Login()
-    if request.method == 'POST'  and form.validate_on_submit():
-        session.pop('user_id',None) # Logs out user if present once login request sent
-        userID = form.userID.data
-        Enteredpassword = form.Password.data
-
-        try:
-            conn = connectionHandler()
-            sql_stmt = "SELECT password FROM Account WHERE AID = %(uID)s;"  # Used to secure SQL statements to prevent injection
-            conn.cursor.execute(sql_stmt,{'uID':userID})
-            #conn.cursor.commit() # may need to do this
-            userPassword =  conn.cursor.fetchone()
-
-            if userPassword:
-                if sha256_crypt.verify(userPassword, Enteredpassword):
-                        #Login the user
-                        session['user_id'] = userID
-
-                        ''' Could also redirect the user to a home page here'''
-
-                        return make_response({'result': "Succeessful Login"},200)
-                # The password is Incorrect
-                else:
-                    return make_response({'result': "Login unsuccessful Please check your password and/or your username"},401)
-            # There are other errors in the form that have stopped it from being processed
-            else:
-                errors = {
-                    'errors': form_errors(form)
-                }
-                conn.close_cursor_and_connection()
-                return make_response(errors,422)
-                
-        except mysql.connector.Error as err:
-            conn.close_cursor_and_connection()
-            return make_response({'error': f"The following error occured: {err}"},500)
-        except Exception as ex:
-            conn.close_cursor_and_connection()
-            return make_response({'error': "There has been an error in communicating with the database when attempting to Login. Please contact your system administrator"}, 503)
-    
-    # If request is not post render the template for logging in below
-    '''Complete here'''
 
 
         
-@app.route('registration/employee-registration',methods=[ 'POST'])
+@app.route('/registration/employee-registration',methods=[ 'POST'])
 def empRegister():
 
     LecturerRegistration = request.json
@@ -119,13 +76,27 @@ def empRegister():
     lName = LecturerRegistration['lName']
     LectID = LecturerRegistration['LectID']
     pwd = LecturerRegistration['pwd']
+    acNo = LecturerRegistration['acNo']
+    dept = LecturerRegistration['DeptID']
+    email = LecturerRegistration['email']
     
     hashedPassword = sha256_crypt.hash(pwd)
     try:
         conn = connectionHandler()
-        sql_stmt = "INSERT into LECTURER (lID,Fname, Mname,Lname,lPassword) VALUES( %(lectID)s,  %(lectFname)s, %(lectMname)s, %(lectLname)s,  %(lectpwd)s);"  # Used to secure SQL statements to prevent injection
-        conn.cursor.execute(sql_stmt,{'lectID':LectID, 'lectFname':fName,'lectMname':mName , 'lectLname':lName,'lectpwd':hashedPassword})
-        conn.cursor.commit()
+        sql_stmt = "INSERT into LECTURER (lID,Password,email) VALUES( %(lectID)s, %(lectpwd)s, %(email)s);"  # Used to secure SQL statements to prevent injection
+        conn.cursor.execute(sql_stmt,{'lectID':LectID,'lectpwd':hashedPassword, 'email':email})
+
+        sql_2 = "INSERT into LecturerAccount(lID,acNo) VALUES(%(lectID)s, %(n)s);"
+        conn.cursor.execute(sql_2,{'lectID':LectID, 'n':acNo})
+
+        sql_3 = "INSERT into lectofdept(lID, deptID) VALUES(%(l)s, %(d)s);"
+        conn.cursor.execute(sql_3,{'l':LectID, 'd':dept})
+
+        sql_4 = "INSERT into lectname(lID,lfName,lmName,llName) VALUES(%(LID)s,%(f)s,%(m)s,%(l)s);"
+        conn.cursor.execute(sql_4,{'LID':LectID,'f':fName,'m':mName,'l':lName})
+
+        conn.connection.commit()
+
         conn.close_cursor_and_connection()
         return make_response({'success':'Your account has been created.'},201)
     
@@ -140,7 +111,7 @@ def empRegister():
 
         
 
-@app.route('registration/student-registration',methods=['POST'])
+@app.route('/registration/student-registration',methods=['POST'])
 def studentRegister():
         student = request.json
         fName = student['fName']
@@ -148,14 +119,26 @@ def studentRegister():
         lName = student['lName']
         stuID = student['stuID']
         pwd =   student['pwd']
-        
+        email = student['email']
+        dept = student['deptID']
+        acNo = student['acNo']
         hashedPassword = sha256_crypt.hash(pwd)
    
         try:
             conn = connectionHandler()
-            sql_stmt = "INSERT into Student (lID,Fname,Mname,Lname,sPassword) VALUES( %(sID)s,  %(Fname)s, %(Mname)s, %(Lname)s,  %(lectpwd)s);"  # Used to secure SQL statements to prevent injection
-            conn.cursor.execute(sql_stmt,{'lectID':stuID, 'Fname':fName, 'Mname': mName, 'Lname':lName,'sPassword':hashedPassword})
-            conn.cursor.commit()
+            sql_stmt = "INSERT into Student (studID,Password,email) VALUES( %(sID)s, %(spwd)s, %(mail)s);"  # Used to secure SQL statements to prevent injection
+            conn.cursor.execute(sql_stmt,{'sID':stuID,'spwd':hashedPassword, 'mail':email})
+
+            sql_2 = "INSERT into StudentAccount (studID,acNo) VALUES( %(sID)s,  %(an)s);"  # Used to secure SQL statements to prevent injection
+            conn.cursor.execute(sql_2,{'sID':stuID, 'an':acNo})
+
+            sql_3 = "INSERT into StudentName(studID, sfName, smName, slName) VALUES(%(sID)s, %(fn)s, %(mn)s, %(ln)s);"
+            conn.cursor.execute(sql_3,{'sID':stuID, 'fn':fName, 'mn':mName, 'ln':lName})
+            
+            sql_4 = "INSERT into StudentOfDept(studID, deptID) VALUES(%(s)s, %(d)s);"
+            conn.cursor.execute(sql_4,{'s':stuID,'d':dept})
+
+            conn.connection.commit()
             conn.close_cursor_and_connection()
             return make_response({'success':'Your account has been created.'},201)
         except mysql.connector.Error as err:
@@ -174,14 +157,8 @@ Returns:
     Success: Informs the user that a particular course has been created
     error: Appropriate error message
 """
-@app.route('course/create',methods=['POST'])
+@app.route('/course/create',methods=['POST'])
 def createCourse():
-
-    '''If the user is not signed in as an admin the person is not allowed to continue'''
-
-    if not session['admin_id']:
-        return make_response({'Unauthorised':'You are not authorised to execute the requested service'},401)
-    
 
     course = request.json   
     cCode = course['cCode']
@@ -190,7 +167,7 @@ def createCourse():
         conn = connectionHandler()
         sql_stmt = "INSERT into Course (cName,cCode) VALUES(%(cc)s, %(ct)s);"
         conn.cursor.execute(sql_stmt,{'cc':cCode,'ct':cTitle})
-        conn.cursor.commit()
+        conn.connection.commit()
         conn.close_cursor_and_connection()
         return make_response({'success':f'The course, {cTitle} has been created.'},201)
     except mysql.connector.Error as err:
@@ -209,7 +186,7 @@ Returns:
     Success: list of courses ad dictionary objects
     Error: Appropriate error message
 """
-@app.route('courses/',methods=['GET'])
+@app.route('/courses/',methods=['GET'])
 def getCourses():
     try:
         conn = connectionHandler()
@@ -274,7 +251,7 @@ Returns:
 """
 
 
-@app.route('courses/<lectID>',methods=['GET'])
+@app.route('/courses/<lectID>',methods=['GET'])
 def lecturerCourses(lectID):
     try:
         conn = connectionHandler()
@@ -303,7 +280,7 @@ def lecturerCourses(lectID):
                               ' Please try again if the issue persist please contact your sysem administrator'},503)
 
 
-@app.route('course/assign',methods=['POST'])
+@app.route('/course/assign',methods=['POST'])
 def assignLecturer(lectID):
     
     try:
@@ -321,7 +298,7 @@ def assignLecturer(lectID):
         else:
             sql_insert_stmt = "INSERT INTO LectOfCourse(cID,lID) VALUES(%(cid)s, %(lectID)s);"
             conn.cursor.execute(sql_insert_stmt,{'cid':courseID,'lid':lectID})
-            conn.cursor.commit()
+            conn.connection.commit()
             conn.close_cursor_and_connection()
             return make_response({'success':f'The course has been assigned a lecturer'},201)
 
@@ -336,7 +313,7 @@ def assignLecturer(lectID):
 
 
 
-@app.route('course/registration',methods=['POST'])
+@app.route('/course/registration',methods=['POST'])
 def courseRegistration():
 
     try:
@@ -363,7 +340,7 @@ def courseRegistration():
         #if all requirements are met commit
         sql_stmt_register = "INSERT INTO StudOfCourse (sID,cID) VALUES(%(stuID)s, %(crsID)s);"
         conn.cursor.execute(sql_stmt_register,{'stuID':studentID,'crsID':courseID})
-        conn.cursor.commit()
+        conn.connection.commit()
         return make_response({'success':"The student has been registered for the course"},200)
 
 
@@ -377,7 +354,7 @@ def courseRegistration():
         return make_response({'error':'An error occurred when attempting to update the course information'},503)
 
 
-@app.route('course/enrollment',methods=['GET'])
+@app.route('/course/enrollment',methods=['GET'])
 def getRegisteredStudents():
 
     getRegisteredStudents = request.json
@@ -405,7 +382,7 @@ def getRegisteredStudents():
 
 
 
-@app.route('course/calendarEvents/<courseID>',methods=['GET'])
+@app.route('/course/calendarEvents/<courseID>',methods=['GET'])
 def getEvents(courseID):
 
     try:
@@ -437,7 +414,7 @@ def getEvents(courseID):
     
 
 
-@app.route('course/calendarEvents/<studentID>',methods=['GET'])
+@app.route('/course/calendarEvents/<studentID>',methods=['GET'])
 def getStudentEvents(studentID):
 
     try:
@@ -483,13 +460,13 @@ def createCalendarEvent():
         cID = createCalendarEvent['cID'] 
         sql_stmt = "INSERT INTO CalendarEvents(calEvName, calEventContents,evDate,evTime) VALUES(%(name)s,%(content)s,%(date)s,%(time)s);"
         conn.cursor.execute(sql_stmt,{'name':eName,'content':eContent,'date':eDate,'time':eTime})
-        conn.cursor.commit()
+        conn.connection.commit()
         sql_stmt_getID = "SELECT calEvNo FROM CalendarEvents WHERE calEvName = %()s AND calEventContents = %()s AND evDate = %()s AND  evTime = %()s;"
         conn.cursor.execute(sql_stmt_getID,{'name':eName,'content':eContent,'date':eDate,'time':eTime})
         id = conn.cursor.fetchone()
         sql_stmt_CalCourse = "INSERT INTO CalEventOfCourse((calEvNo, cID) VALUES (%(id)s, %(courseID)s);"
         conn.cursor.execute(sql_stmt_CalCourse,{'id':id,'courseID':cID})
-        conn.cursor.commit()
+        conn.connection.commit()
         conn.close_cursor_and_connection()
                 
 
@@ -556,14 +533,14 @@ def createForum():
         
         sql_stmt = "INSERT INTO DiscussionForumContent( forumTitle, forumMessage) VALUES(%(t)s, %(m)s);"
         conn.cursor.execute(sql_stmt,{'t':title,'m':msg})
-        conn.cursor.commit()
+        conn.connection.commit()
          
         sql_stmt_getID = "SELECT forumNo FROM DiscussionForumContent WHERE forumTitle = %(forumTitle)s AND forumMessage = %(forumMessage)s;"
         conn.cursor.execute(sql_stmt_getID,{'forumTitle':title,'forumMessage':msg})
         id = conn.cursor.fetchone()
         sql_stmt_CalCourse = "INSERT INTO DiscussionForum((forumNo, cID) VALUES (%(id)s, %(courseID)s);"
         conn.cursor.execute(sql_stmt_CalCourse,{'id':id,'courseID':courseID})
-        conn.cursor.commit()
+        conn.connection.commit()
         conn.close_cursor_and_connection()
 
         
@@ -577,7 +554,7 @@ def createForum():
         conn.close_cursor_and_connection()
         return make_response({'error':'An error occurred when attempting to retreive forums'},503)
 
-@app.route('course/forum/thread/<forumID>',methods=['GET'])
+@app.route('/course/forum/thread/<forumID>',methods=['GET'])
 def getDiscussionThread(forumID):
 
     try:
@@ -603,7 +580,7 @@ def getDiscussionThread(forumID):
         return make_response({'error':'An error occurred when attempting to retreive forums'},503)
     
 
-@app.route('course/forum/thread/create/<forumNo>',methods=['POST'])
+@app.route('/course/forum/thread/create/<forumNo>',methods=['POST'])
 def createThread(forumNo):
     
     DiscussionForum = request.json
@@ -615,13 +592,13 @@ def createThread(forumNo):
         conn = connectionHandler()
         sql_stmt  = "INSERT INTO DiscussionThreadContent(threadTitle, threadMessage) VALUES(%(tt)s,%(tm)s);" 
         conn.cursor.execute(sql_stmt,{'tt':title, 'tm':msg})
-        conn.cursor.commit()
+        conn.connection.commit()
         sql_stmt_getID = "SELECT threadNo FROM DiscussionThreadContent WHERE threadTitle = %(tt)s AND threadMessage = %(tm)s;"
         conn.cursor.execute(sql_stmt_getID,{'tt':title, 'tm':msg})
         id = conn.cursor.fetchone()
         sql_stmt_insert = "INSERT INTO DiscussionThread(forumNo, threadNo) VALUES(%(fNo)s, %(tNo)s);"
         conn.cursor.execute(sql_stmt_insert,{'fNo':forumNo,'tNo':id})
-        conn.cursor.commit()
+        conn.connection.commit()
         
         conn.close_cursor_and_connection()
         
@@ -717,13 +694,13 @@ def addSection():
         cID = createSection ['cID'] 
         sql_stmt = "INSERT INTO Section(secNmae) VALUES(%(sn)s);"
         conn.cursor.execute(sql_stmt,{'sn':name})
-        conn.cursor.commit()
+        conn.connection.commit()
         sql_stmt_id = "SELECT secid FROM Section WHERE secName = %(sn)s;"
         conn.cursor.execute(sql_stmt_id,{'sn':name})
         id = conn.cursor.fetchone()
         sql_stmt_insert = "INSERT INTO SecOfCourse(secNo, cID) VALUES(%(id)s,%(cID)s)"
         conn.cursor.execute(sql_stmt_insert,{'id':id,'cID':cID})
-        conn.cursor.commit()
+        conn.connection.commit()
         conn.close_cursor_and_connection()
         return make_response({'success':'Section created'},200)
     
@@ -740,7 +717,7 @@ def addSection():
 def addContent():
     pass
 
-@app.route('/course/assignment',method=['GET'])
+@app.route('/course/assignment',methods=['GET'])
 def getAssignments():
     pass
 
@@ -753,7 +730,7 @@ def gradeAssignment():
     pass
 
 
-@app.route('course/report', method =['GET'])
+@app.route('/course/report', methods =['GET'])
 def report():
     pass
 
@@ -777,3 +754,7 @@ def form_errors(form):
             error_messages.append(message)
 
     return error_messages
+
+
+if __name__ == '__main__':
+    app.run(debug=True, host = '0.0.0.0', port=6000)
