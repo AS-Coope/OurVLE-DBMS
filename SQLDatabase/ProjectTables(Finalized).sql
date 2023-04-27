@@ -98,8 +98,7 @@ CREATE TABLE AdminName(
     aID int NOT NULL,
     afName varchar(255) NOT NULL,
     amName varchar(255) NOT NULL,
-    alName varchar(255) NOT NULL,
-    password varchar(255) NOT NULL
+    alName varchar(255) NOT NULL
 );
 
 -- creating AdminAccount table
