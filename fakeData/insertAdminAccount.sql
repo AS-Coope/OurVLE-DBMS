@@ -98,7 +98,3 @@ INSERT INTO AdminAccount VALUES(100000000,"ADM100000000"),
 (100000097,"ADM100000097"),
 (100000098,"ADM100000098"),
 (100000099,"ADM100000099");
-
-select * from AdminAccount; 
-
-delete from  AdminAccount;
