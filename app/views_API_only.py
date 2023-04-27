@@ -76,7 +76,7 @@ def empRegister():
     lName = LecturerRegistration['lName']
     LectID = LecturerRegistration['LectID']
     pwd = LecturerRegistration['pwd']
-    acNo = LecturerRegistration['acNo']
+    acNo = 'LEC' + LectID
     dept = LecturerRegistration['DeptID']
     email = LecturerRegistration['email']
     
@@ -121,7 +121,7 @@ def studentRegister():
         pwd =   student['pwd']
         email = student['email']
         dept = student['deptID']
-        acNo = student['acNo']
+        acNo = 'STU' + stuID
         hashedPassword = sha256_crypt.hash(pwd)
    
         try:
@@ -157,6 +157,7 @@ Returns:
     Success: Informs the user that a particular course has been created
     error: Appropriate error message
 """
+
 @app.route('/course/create',methods=['POST'])
 def createCourse():
 
@@ -223,16 +224,17 @@ def getCourses():
     
 
     
-@app.route('/courses/<studentId>',methods=['GET'])
+@app.route('/courses/student/<studentId>',methods=['GET'])
 def getStudentCourse(studentId):
 
+    studentId = studentId.strip()
     try:
         conn = connectionHandler()
 
         ''''To complete this query it should search in the enrollment table for the student ID
             then with the cIDs that it have -if any- search for the course titles'''
         
-        sql_stmt = "SELECT DISTINCT cID FROM enrollment WHERE sID  =%(sID)s;" # select cIDs for student
+        sql_stmt = "SELECT DISTINCT cID FROM courseofStud WHERE studID  =%(sID)s;" # select cIDs for student
         conn.cursor.execute(sql_stmt,{'sID':studentId})
 
         course_list = [cName for cName in conn.cursor]
@@ -262,15 +264,16 @@ Returns:
 """
 
 
-@app.route('/courses/<lectID>',methods=['GET'])
+@app.route('/courses/lecturer/<lectID>',methods=['GET'])
 def lecturerCourses(lectID):
+    lectID = lectID.strip()
     try:
         conn = connectionHandler()
 
         ''''To complete this query it should search in the LectOfCourse table for the lect ID
             then with the lectID that it have -if any- search for the course titles'''
         
-        sql_stmt = "SELECT DISTINCT cID FROM enrollment WHERE sID  =%(lectID)s;" # select cIDs for Lecturer
+        sql_stmt = "SELECT DISTINCT cID FROM  lectofcourse WHERE lID  =%(lectID)s;" # select cIDs for Lecturer
         conn.cursor.execute(sql_stmt,{'lectID':lectID})
 
         courses_lectured_list = [cName for cName in conn.cursor]
@@ -292,20 +295,27 @@ def lecturerCourses(lectID):
 
 
 @app.route('/course/assign',methods=['POST'])
-def assignLecturer(lectID):
+def assignLecturer():
     
     try:
         conn = connectionHandler()
 
         LecturerOptions = request.json
-        lectID = LecturerOptions['lectID']
-        courseID = LecturerOptions['courseID']
+        lectID = LecturerOptions['lectID'].strip()
+        courseID = LecturerOptions['courseID'].strip()
         sql_stmt = "SELECT COUNT(lID) FROM LectOfCourse WHERE cID  =%(courseID)s;"
         conn.cursor.execute(sql_stmt,{'courseID':courseID})
         count = conn.cursor.fetchone()[0]
-        if count > 0:
+        print(count)
+
+        sql_2 = "SELECT COUNT(cid) FROM LectOfCourse WHERE lID  = %(l)s;"
+        conn.cursor.execute(sql_2,{'l':lectID})
+        count2 = conn.cursor.fetchone()[0]
+        print(count2)
+        if int(count2) > 4:
             conn.close_cursor_and_connection()
-            return make_response({'error':'There is already a lecturer assigned to the Selected course.'},304)
+            return make_response({'error':'This lecturer is already doing max amount of courses.'},303)
+            
         else:
             sql_insert_stmt = "INSERT INTO LectOfCourse(cID,lID) VALUES(%(cid)s, %(lectID)s);"
             conn.cursor.execute(sql_insert_stmt,{'cid':courseID,'lid':lectID})
@@ -332,24 +342,29 @@ def courseRegistration():
 
         CourseRegistration = request.json
 
-        studentID = CourseRegistration['studentID']
-        courseID = CourseRegistration['courseID']
+        studentID = CourseRegistration['studentID'].strip()
+        courseID = CourseRegistration['courseID'].strip()
+
         #check if the student is already registered
-        sql_stmt_check_if_alrady_reg = "select IF((SELECT COUNT(sID) FROM LectOfCourse WHERE cID = %(courseID)s AND sID = %(studentID)s) > 0, 'Yes', 'No') as Result;"
+        sql_stmt_check_if_alrady_reg = "select IF((SELECT COUNT(studID) FROM courseofStud WHERE cID = %(courseID)s AND studID = %(studentID)s) > 0, 'Yes', 'No') as Result;"
         conn.cursor.execute(sql_stmt_check_if_alrady_reg,{'courseID':courseID,'studentID':studentID})
+        resp1 = conn.cursor.fetchone()[0]
+        print(resp1)
         
-        
-        if conn.cursor.fetchone() == 'Yes':
+        if resp1 == 'Yes':
             return make_response({'error': "the Student is already registerd for the selected course"},400)
         
         #check to ensure the student is registered in no more that 6 courses
-        sql_stmt_check_course_limit = "select IF((SELECT COUNT(cID) FROM LectOfCourse WHERE sID = %(studentID)s) > 5, 'Yes', 'No') as Result;"
+        sql_stmt_check_course_limit = "select IF((SELECT COUNT(cID) FROM courseofStud WHERE studID = %(studentID)s) > 5, 'Yes', 'No') as Result;"
         conn.cursor.execute(sql_stmt_check_course_limit,{'studentID':studentID})
-        if conn.cursor.fetchone() == 'Yes':
+
+        resp2 =  conn.cursor.fetchone()[0]
+        print(resp2)
+        if resp2 == 'Yes':
             return make_response({'error': "the student is already registered for the maximum of 6 credits"},400)
         
         #if all requirements are met commit
-        sql_stmt_register = "INSERT INTO StudOfCourse (sID,cID) VALUES(%(stuID)s, %(crsID)s);"
+        sql_stmt_register = "INSERT INTO courseofStud (studID,cID) VALUES(%(stuID)s, %(crsID)s);"
         conn.cursor.execute(sql_stmt_register,{'stuID':studentID,'crsID':courseID})
         conn.connection.commit()
         return make_response({'success':"The student has been registered for the course"},200)
@@ -365,15 +380,15 @@ def courseRegistration():
         return make_response({'error':'An error occurred when attempting to update the course information'},503)
 
 
-@app.route('/course/enrollment',methods=['GET'])
-def getRegisteredStudents():
+@app.route('/course/enrollment/<courseID>',methods=['GET'])
+def getRegisteredStudents(courseID):
 
-    getRegisteredStudents = request.json
+    courseID =courseID.strip()
+
     try:
         conn = connectionHandler()
 
-        courseID = getRegisteredStudents['courseID']
-        sql_stmt = "SELECT DISTINCT sID FROM StudOfCourse WHERE cID = %(crseID)s;"
+        sql_stmt = "SELECT DISTINCT studID FROM courseofStud WHERE cID = %(crseID)s;"
         conn.cursor.execute(sql_stmt,{'crseID':courseID})
         course_list= []
         for cID in conn.cursor:
