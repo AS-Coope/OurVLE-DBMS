@@ -62,50 +62,6 @@ def index():
     return render_template('base.html')
 
 
-@app.route('/login',methods =['POST','GET'])
-def login():
-  
-    form = Login()
-    if request.method == 'POST'  and form.validate_on_submit():
-        session.pop('user_id',None) # Logs out user if present once login request sent
-        userID = form.userID.data
-        Enteredpassword = form.Password.data
-
-        try:
-            conn = connectionHandler()
-            sql_stmt = "SELECT password FROM Account WHERE AID = %(uID)s;"  # Used to secure SQL statements to prevent injection
-            conn.cursor.execute(sql_stmt,{'uID':userID})
-            #conn.cursor.commit() # may need to do this
-            userPassword =  conn.cursor.fetchone()
-
-            if userPassword:
-                if sha256_crypt.verify(userPassword, Enteredpassword):
-                        #Login the user
-                        session['user_id'] = userID
-
-                        ''' Could also redirect the user to a home page here'''
-
-                        return make_response({'result': "Succeessful Login"},200)
-                # The password is Incorrect
-                else:
-                    return make_response({'result': "Login unsuccessful Please check your password and/or your username"},401)
-            # There are other errors in the form that have stopped it from being processed
-            else:
-                errors = {
-                    'errors': form_errors(form)
-                }
-                conn.close_cursor_and_connection()
-                return make_response(errors,422)
-                
-        except mysql.connector.Error as err:
-            conn.close_cursor_and_connection()
-            return make_response({'error': f"The following error occured: {err}"},500)
-        except Exception as ex:
-            conn.close_cursor_and_connection()
-            return make_response({'error': "There has been an error in communicating with the database when attempting to Login. Please contact your system administrator"}, 503)
-    
-    # If request is not post render the template for logging in below
-    '''Complete here'''
 
 
         
