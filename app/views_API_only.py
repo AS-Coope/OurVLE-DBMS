@@ -5,6 +5,11 @@ from pprint import pprint
 # from werkzeug.security import check_password_hash
 from passlib.hash import sha256_crypt
 import mysql.connector
+
+from dotenv import load_dotenv
+load_dotenv()
+
+import os
 # from app.forms_OurVLE import *
 
 
@@ -25,12 +30,12 @@ print(sha256_crypt.verify("password", password))
 
 
 
-USER = 'root'
-PASSWORD = '%(E#Jp^_Q/!!w'
-HOST = 'localhost'
-DATABASE = 'Project'
+USER =  os.environ.get('USER')
+PASSWORD =  os.environ.get('PASSWORD')
+HOST = os.environ.get('HOST')
+DATABASE =  os.environ.get('DATABASE')
 
-
+print(f'*?*?*?*?*?*?*?**?*?* {USER}')
 class connectionHandler:
 
     def __init__(self) -> None:
