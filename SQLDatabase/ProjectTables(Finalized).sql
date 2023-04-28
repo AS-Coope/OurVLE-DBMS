@@ -215,7 +215,7 @@ CREATE TABLE SubmissionPortal(
 CREATE TABLE SubmissionEntries(
     spID int NOT NULL,
     studID varchar(255) NOT NULL,
-    itemSubmit BLOB NOT NULL
+    itemSubmit BLOB
 );
 
 -- creating SubmissionGrade table
