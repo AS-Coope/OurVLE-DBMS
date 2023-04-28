@@ -33,7 +33,7 @@ for line in eachLineList[1:]:
         value = "("+line[0].strip() + ',' + '"' + line[1].strip() + '"' + ");\n" 
         #print(value)
         queryInserter.write(value)
-        break # the table repeats itself after line 1250th tuple
+        break # the table repeats itself after line 1250th data 
     currLine += 1
     
 csvFile.close()

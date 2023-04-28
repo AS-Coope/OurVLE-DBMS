@@ -47,7 +47,7 @@ EDTK3004,Educational Technology,1004
 EDTL3018,Culminating school-based experience: Clinical Practice,1004
 EDTL3020,Pre-Practicum,1004
 EDTL3021,Field Study,1004
-EDME1103,Content and Pedagogy for Selected Topics in Mathematics,1004
+PHYS3500,Advanced Materials Science Laboratory,1002
 EDTL1021,Planning for Teaching and Learning,1004
 EDEA2304,Introduction To Educational Administration,1004
 EDHE2908,Local and Community Studies,1004
@@ -66,21 +66,21 @@ EDSE2712,Introduction to the Learner in Difficulty,1004
 EDSS2906,Basic Geographic Skills for the Social Studies Teacher,1004
 EDEA3305,Special Problems in School Administration,1004
 EDEA3307,School and Classroom Management B,1004
-EDEA3320,The Study,1004
+PHYS3562,The Physics of Non-Crystalline and Amorphous Materials,1002
 EDHE3904,Assessment of Achievement in History,1004
 EDHE3908,Selecting Methods & Resources for Instruction in Caribbean and World History,1004
 EDLA3103,The Teaching of English Literature in the Secondary School,1004
-EDLA3106,Content and Pedagogy for CXC English Language A,1004
+PHYS3565,Thermodynamics and Kinetics of Materials,1002
 EDLA3110,Writing in the Secondary School,1004
 EDLA3111,Teaching Caribbean Poetry,1004
-EDLS3603,Advanced Study Of Assessment Of Literacy,1004
+PHYS3300,Advanced Practices in Medical Physics,1002
 EDLS3612,Writing as Literacy Development in the Primary School,1004
 EDMC3020,Calculus II,1004
 EDMC3202,Assessing Mathematics Learning,1004
 EDME3006,Classroom Testing and Evaluation Advance,1004
 EDME3205,Teaching Mathematics in Grades 10 and 11,1004
 EDRS3008,Research Methods (II),1004
-EDRS3019,Report,1004
+ELET3450,Satellite Communication and Navigational Systems,1002
 EDSC3403,Assessment in Science Teaching,1004
 EDSC3408,Environmental Education,1004
 EDSC3411,Science Teaching and the History of Science,1004
@@ -109,7 +109,7 @@ COMP3912,Internship in Computing II,1000
 INFO3105,Computer Systems Administration,1000
 INFO3110,Information Systems in Organisations,1000
 INFO3155,Computer & Network Security for IT,1000
-COMP3161,Database Management Systems,1000
+PHYS3400,Physics in Practice Internship,1002
 INFO3170,User Interface Design for IT,1000
 INFO3180,Dynamic Web Development II,1000
 INFO3435,e-Commerce,1000
@@ -119,17 +119,17 @@ SWEN3145,Software Modeling,1000
 SWEN3165,Software Testing,1000
 SWEN3185,Software Reliability and Formal Methods,1000
 SWEN3920,Capstone Project (Software Engineering),1000
-MATH6623, Numerical Methods for Differential Equations,1001
-STAT6632, Multivariate Statistical Analysis,1001
-STAT6630, Introduction of Stochastic Processes,1001
-STAT6631, The Analysis of Time Series,1001
-STAT6631, The Analysis of Time Series,1001
-MATH6629, Mechanics of Interacting Particles,1001
-MATH6633, A Course in Algebraic Number Theory,1001
-MATH6634, A course in the History of Mathematics,1001
-MATH6628, Differential Geometry,1001
-MATH6622, Differential Equations,1001
-MATH6635, Complex Analysis and Applications,1001
+MATH6623,Numerical Methods for Differential Equations,1001
+STAT6632,Multivariate Statistical Analysis,1001
+STAT6630,Introduction of Stochastic Processes,1001
+STAT6631,The Analysis of Time Series,1001
+PHYS3701,Advanced Renewable Energy Technology and Solutions,1002
+MATH6629,Mechanics of Interacting Particles,1001
+MATH6633,A Course in Algebraic Number Theory,1001
+MATH6634,A course in the History of Mathematics,1001
+MATH6628,Differential Geometry,1001
+MATH6622,Differential Equations,1001
+MATH6635,Complex Analysis and Applications,1001
 ECON1000,Principles of Economics I,1003
 ECON1003,Mathematics for Social Sciences I,1003
 ECON1004,Mathematics for Social Sciences II,1003
@@ -169,30 +169,30 @@ ECON3050,Applied Econometrics,1003
 ECON3051,Development Economics,1003
 ECON3072,Financial Markets,1003
 ECON3073,Credit Analysis and Lending,1003
-MATH1141, Introductory Linear Algebra & Analytic Geometry,1001
-MATH1142, Calculus I,1001
-MATH1151, Calculus II,1001
-MATH1152, Introduction to Formal Mathematics,1001
-MATH2401, Elements of Mathematical Analysis,1001
-MATH2410, A First Course in Linear Algebra,1001
-MATH2404, Introduction to Probability Theory,1001
-MATH2411, Introduction to Abstract Algebra,1001
-MATH2403, Multivariable Calculus,1001
-MATH2420, Ordinary Differential Equations,1001
-MATH3155, Complex Variables,1001
-MATH3412, Advanced Linear Algebra,1001
-MATH3402, A course on Metric Spaces & Topology,1001
-MATH3423, Research Project,1001
-STAT3001, Regression Analysis,1001
-MATH3403, Some Topics in Functional Analyses,1001
-MATH3401, Introduction to the Theory of Integration,1001
-MATH3411, Advanced Abstract Algebra,1001
-MATH3404, Introduction to Differential Geometry with Maple,1001
-STAT3002, Time Series,1001
+MATH1141,Introductory Linear Algebra & Analytic Geometry,1001
+MATH1142,Calculus I,1001
+MATH1151,Calculus II,1001
+MATH1152,Introduction to Formal Mathematics,1001
+MATH2401,Elements of Mathematical Analysis,1001
+MATH2410,A First Course in Linear Algebra,1001
+MATH2404,Introduction to Probability Theory,1001
+MATH2411,Introduction to Abstract Algebra,1001
+MATH2403,Multivariable Calculus,1001
+MATH2420,Ordinary Differential Equations,1001
+MATH3155,Complex Variables,1001
+MATH3412,Advanced Linear Algebra,1001
+MATH3402,A course on Metric Spaces & Topology,1001
+MATH3423,Research Project,1001
+STAT3001,Regression Analysis,1001
+MATH3403,Some Topics in Functional Analyses,1001
+MATH3401,Introduction to the Theory of Integration,1001
+MATH3411,Advanced Abstract Algebra,1001
+MATH3404,Introduction to Differential Geometry with Maple,1001
+STAT3002,Time Series,1001
 MATH3414,Selected Topics in Operations Research,1001
-MATH3421, Partial Differential Equations,1001
-MATH3422, Mathematical Modelling,1001
-MATH3424, Numerical Methods,1001
+MATH3421,Partial Differential Equations,1001
+MATH3422,Mathematical Modelling,1001
+MATH3424,Numerical Methods,1001
 ECNG1000,Electrical Circuits,1002
 PHYS1411,Mechanics,1002
 PHYS1412,"Waves, Optics and Thermodynamics",1002
@@ -245,5 +245,5 @@ ELET2570,Microprocessors and Computer Architecture,1002
 PHYS2000,Fundamentals of Energy Statistics,1002
 PHYS2701,Essentials of Renewable Energy Technologies and Solutions,1002
 PHYS3000,Energy Information Management,1002
-MDPH6240,"Non-Ionization Radiation: Physics, Equipment and Applications",1002
-MDPH6230,"Nuclear Medicine: Physics, Equipment and Applications",1002
+ELET3211,Speech and Language Technology,1002
+PHYS3200,General Physics Lab 2,1002
