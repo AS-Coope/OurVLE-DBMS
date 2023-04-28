@@ -1,5 +1,6 @@
 
 from flask import Flask, render_template, request, make_response,jsonify,session
+from pprint import pprint
 # from flask_login import current_user , login_user,login_required, logout_user
 # from werkzeug.security import check_password_hash
 from passlib.hash import sha256_crypt
@@ -391,8 +392,8 @@ def getRegisteredStudents(courseID):
         sql_stmt = "SELECT DISTINCT studID FROM courseofStud WHERE cID = %(crseID)s;"
         conn.cursor.execute(sql_stmt,{'crseID':courseID})
         course_list= []
-        for cID in conn.cursor:
-            course_list.append(cID)
+        for studID in conn.cursor:
+            course_list.append(studID)
         conn.close_cursor_and_connection()
         return make_response({'success':course_list},200)              
     
@@ -408,21 +409,22 @@ def getRegisteredStudents(courseID):
 
 
 
-@app.route('/course/calendarEvents/<courseID>',methods=['GET'])
+@app.route('/course/calendarEvents/course/<courseID>',methods=['GET'])
 def getEvents(courseID):
 
+    courseID = courseID.strip()
     try:
-        
+        'SELECT DISTINCT cID FROM courseofStud WHERE studID  =%(sID)s;'
         conn = connectionHandler()
         """The Add query to acess CalendarEvents and CalEventOfCourse"""
-        sql_stmt = ""
-        conn.cursor.execute(sql_stmt,{'crseID':courseID})
+        sql_stmt = "SELECT * FROM calendarevents WHERE calEvNo IN (SELECT CalEvNo FROM CalEventOfCourse WHERE cID = %(cid)s);"
+        conn.cursor.execute(sql_stmt,{'cid':courseID})
         events= []
-        for calEvName,calEventContents,evDate,evTime in conn.cursor:
+        for calevno,calEvName,calEventContents,evDate,evTime in conn.cursor:
             event ={}
             event['evDate']  = evDate
             event['calEventContents'] = calEventContents        
-            event['evTime'] = evTime
+            event['evTime'] = str(evTime)
             event['calEvName'] = calEvName
             
             events.append(event)
@@ -440,22 +442,20 @@ def getEvents(courseID):
     
 
 
-@app.route('/course/calendarEvents/<studentID>',methods=['GET'])
+@app.route('/course/calendarEvents/student/<studentID>',methods=['GET'])
 def getStudentEvents(studentID):
-
+    studentID = studentID.strip()
     try:
         conn = connectionHandler()
-
                 
-        """The Add query to acess CalendarEvents and CalEventOfCourse for a particular Student"""
-        sql_stmt = ""
+        sql_stmt = "select * from calendarevents where calevNo in (select caleventofcourse.calevno from courseofstud join caleventofcourse on courseofstud.cid = caleventofcourse.cid where studid = %(studentID)s);"
         conn.cursor.execute(sql_stmt,{'studentID':studentID})
         events= []
-        for calEvName,calEventContents,evDate,evTime in conn.cursor:
+        for calevno,calEvName,calEventContents,evDate,evTime in conn.cursor:
             event ={}
             event['evDate']  = evDate
             event['calEventContents'] = calEventContents        
-            event['evTime'] = evTime
+            event['evTime'] = str(evTime)
             event['calEvName'] = calEvName
             
             events.append(event)
@@ -468,7 +468,8 @@ def getStudentEvents(studentID):
     
     except Exception as ex:
         conn.close_cursor_and_connection()
-        return make_response({'error':'An error occurred when attempting to retreive calendar Events'},503)
+
+        return make_response({'error':'An error occurred when attempting to retreive calendar Events for the student.'},503)
     
 
 
@@ -481,22 +482,23 @@ def createCalendarEvent():
 
         eDate  = createCalendarEvent['eDate'] 
         eTime = createCalendarEvent['eTime'] 
-        eName = createCalendarEvent['eName'] 
+        calevName = createCalendarEvent['calevName'] 
         eContent = createCalendarEvent['eContent'] 
         cID = createCalendarEvent['cID'] 
+
         sql_stmt = "INSERT INTO CalendarEvents(calEvName, calEventContents,evDate,evTime) VALUES(%(name)s,%(content)s,%(date)s,%(time)s);"
-        conn.cursor.execute(sql_stmt,{'name':eName,'content':eContent,'date':eDate,'time':eTime})
+        conn.cursor.execute(sql_stmt,{'name':calevName,'content':eContent,'date':eDate,'time':eTime})
         conn.connection.commit()
-        sql_stmt_getID = "SELECT calEvNo FROM CalendarEvents WHERE calEvName = %()s AND calEventContents = %()s AND evDate = %()s AND  evTime = %()s;"
-        conn.cursor.execute(sql_stmt_getID,{'name':eName,'content':eContent,'date':eDate,'time':eTime})
-        id = conn.cursor.fetchone()
-        sql_stmt_CalCourse = "INSERT INTO CalEventOfCourse((calEvNo, cID) VALUES (%(id)s, %(courseID)s);"
+
+        sql_stmt_getID = "SELECT calEvNo FROM CalendarEvents WHERE calEvName = %(name)s AND calEventContents = %(content)s AND evDate = %(date)s AND  evTime = %(time)s;"
+        conn.cursor.execute(sql_stmt_getID,{'name':calevName,'content':eContent,'date':eDate,'time':eTime})
+        id = conn.cursor.fetchone()[0]
+        sql_stmt_CalCourse = "INSERT INTO CalEventOfCourse(calEvNo, cID) VALUES (%(id)s, %(courseID)s);"
         conn.cursor.execute(sql_stmt_CalCourse,{'id':id,'courseID':cID})
         conn.connection.commit()
         conn.close_cursor_and_connection()
-                
-
-                
+        return make_response({'success':f'The Event, {calevName} has been created'},200)
+                             
     except mysql.connector.Error as err:
             conn.close_cursor_and_connection()
             return make_response({'error': f"The following error occured: {err}"},500)
