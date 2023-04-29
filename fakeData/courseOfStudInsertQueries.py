@@ -23,7 +23,7 @@ queryInserter.write(value)
 currLine = 1
 for line in eachLineList[1:]:
     #print(line)
-    if currLine != 506637:
+    if currLine != 506773:
         # given these aren't the last line in the query then they are separated by commas
         value = "("+line[0].strip() + ',' + '"' + line[1].strip() + '"' + "),\n" 
         #print(value)
@@ -33,6 +33,7 @@ for line in eachLineList[1:]:
         value = "("+line[0].strip() + ',' + '"' + line[1].strip() + '"' + ");\n" 
         #print(value)
         queryInserter.write(value)
+        
         break # the table repeats itself after line 1250th tuple
     currLine += 1
     
