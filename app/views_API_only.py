@@ -35,18 +35,24 @@ PASSWORD =  os.environ.get('PASSWORD')
 HOST = os.environ.get('HOST')
 DATABASE =  os.environ.get('DATABASE')
 
-print(f'*?*?*?*?*?*?*?**?*?* {USER}')
+
 class connectionHandler:
 
     def __init__(self) -> None:
         self.connection = self.make_connection_cursor()
-        self.cursor =  self.connection.cursor()
+        self.cursor =  self.connection.cursor(buffered=True)
 
     @classmethod
     def make_connection_cursor(self):
         return mysql.connector.connect(user=USER, password=PASSWORD,
                                 host=HOST,
                                 database=DATABASE)
+    
+    def setbufferFalse(self):
+         self.cursor(buffered = False)
+
+    def setbufferTrue(self):
+         self.cursor(buffered = True)
     
     def close_cursor(self):
         self.cursor.close()
@@ -519,10 +525,11 @@ def createCalendarEvent():
 @app.route('/course/forums/<courseID>',methods=['GET'])
 def getForums(courseID):
     
+    courseID =courseID.strip()
     try:
         conn = connectionHandler()
 
-        sql_stmt = "SELECT * FROM DiscussionForum WHERE forumNo in (SELECT forumNo FROM DiscussionForum WHERE cID = %(cid)s);"
+        sql_stmt = "SELECT * FROM DiscussionForumContent WHERE forumNo in (SELECT forumNo FROM DiscussionForum WHERE cID = %(cid)s);"
 
         conn.cursor.execute(sql_stmt,{'cid':courseID})
 
@@ -553,16 +560,17 @@ def getForums(courseID):
 
 
 
-@app.route('/course/forum/create/<courseID>',methods=['POST'])
+@app.route('/course/forum/create/',methods=['POST'])
 def createForum():
     DiscussionForum = request.json
 
     try: 
         conn = connectionHandler()
             
-        title = DiscussionForum['title'] 
-        msg = DiscussionForum['msg']
-        courseID = DiscussionForum['courseID']
+        title = DiscussionForum['title'].strip() 
+        msg = DiscussionForum['msg'].strip()
+        courseID = DiscussionForum['courseID'].strip()
+        
         
         sql_stmt = "INSERT INTO DiscussionForumContent( forumTitle, forumMessage) VALUES(%(t)s, %(m)s);"
         conn.cursor.execute(sql_stmt,{'t':title,'m':msg})
@@ -570,33 +578,48 @@ def createForum():
          
         sql_stmt_getID = "SELECT forumNo FROM DiscussionForumContent WHERE forumTitle = %(forumTitle)s AND forumMessage = %(forumMessage)s;"
         conn.cursor.execute(sql_stmt_getID,{'forumTitle':title,'forumMessage':msg})
-        id = conn.cursor.fetchone()
-        sql_stmt_CalCourse = "INSERT INTO DiscussionForum((forumNo, cID) VALUES (%(id)s, %(courseID)s);"
-        conn.cursor.execute(sql_stmt_CalCourse,{'id':id,'courseID':courseID})
-        conn.connection.commit()
-        conn.close_cursor_and_connection()
+        id = conn.cursor.fetchone()[0]
 
+
+        sql_stmt_check_if_alrady_in = "select IF((SELECT COUNT(forumNo) FROM discussionforum WHERE forumNo = %(fno)s ) > 0, 'Yes', 'No') as Result;"
+        conn.cursor.execute(sql_stmt_check_if_alrady_in,{'fno':id})
+        resp1 = conn.cursor.fetchone()[0]
+
+        if resp1 == 'Yes':
+            
+            return make_response({'error': "the Forum Already exists."},400)
         
+
+        sql_stmt_CalCourse = "INSERT INTO DiscussionForum(forumNo,cid) VALUES (%(fid)s,%(courseID)s);"
+        conn.cursor.execute(sql_stmt_CalCourse,{'fid':id,'courseID':courseID})
+        conn.connection.commit()
+        
+        conn.close_cursor_and_connection()
+        return make_response({'suceess':'The Forum has been created!'},200)        
 
 
     except mysql.connector.Error as err:
+            
+            
             conn.close_cursor_and_connection()
             return make_response({'error': f"The following error occured: {err}"},500)
     
     except Exception as ex:
+        
+
         conn.close_cursor_and_connection()
         return make_response({'error':'An error occurred when attempting to retreive forums'},503)
 
 @app.route('/course/forum/thread/<forumID>',methods=['GET'])
 def getDiscussionThread(forumID):
-
+    forumID =forumID.strip()
     try:
         conn = connectionHandler()
-        sql_stmt = "SELECT * FROM DiscussionThreadContent WHERE threadNo IN(SELECT threadaNo FROM DiscussionThread WHERE forumNo = %(fNo)s);"
+        sql_stmt = "SELECT * FROM DiscussionThreadContent WHERE threadNo IN(SELECT threadNo FROM DiscussionThread WHERE forumNo = %(fNo)s);"
         conn.cursor.execute(sql_stmt,{'fNo':forumID})
 
         threads = []
-        for  threadTitle, threadMessage in conn.cursor:
+        for  threadNo,threadTitle, threadMessage in conn.cursor:
             thread = {}
             thread['title']= threadTitle
             thread['message'] = threadMessage
@@ -613,15 +636,15 @@ def getDiscussionThread(forumID):
         return make_response({'error':'An error occurred when attempting to retreive forums'},503)
     
 
-@app.route('/course/forum/thread/create/<forumNo>',methods=['POST'])
-def createThread(forumNo):
+@app.route('/course/forum/thread/create/',methods=['POST'])
+def createThread():
     
     DiscussionForum = request.json
+    msg = DiscussionForum['msg'].strip()
+    title = DiscussionForum['title'].strip()
+    forumNo = DiscussionForum['forumNo'].strip()
 
     try:
-                
-        msg = DiscussionForum['msg'] 
-        title = DiscussionForum['title'] 
         conn = connectionHandler()
         sql_stmt  = "INSERT INTO DiscussionThreadContent(threadTitle, threadMessage) VALUES(%(tt)s,%(tm)s);" 
         conn.cursor.execute(sql_stmt,{'tt':title, 'tm':msg})
