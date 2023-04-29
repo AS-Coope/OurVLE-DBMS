@@ -639,10 +639,10 @@ def getDiscussionThread(forumID):
 @app.route('/course/forum/thread/create/',methods=['POST'])
 def createThread():
     
-    DiscussionForum = request.json
-    msg = DiscussionForum['msg'].strip()
-    title = DiscussionForum['title'].strip()
-    forumNo = DiscussionForum['forumNo'].strip()
+    Thread = request.json
+    msg = Thread['msg'].strip()
+    title = Thread['title'].strip()
+    forumNo = Thread['forumNo'].strip()
 
     try:
         conn = connectionHandler()
