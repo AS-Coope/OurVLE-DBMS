@@ -5,6 +5,7 @@ from pprint import pprint
 # from werkzeug.security import check_password_hash
 from passlib.hash import sha256_crypt
 import mysql.connector
+import base64
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -667,12 +668,12 @@ def createThread():
         return make_response({'error':'An error occurred when attempting to create a thread'},503)
 
 
-@app.route('/course/content/<coruseID>',methods=['GET'])
+@app.route('/course/content/<courseID>',methods=['GET'])
 def getCourseContent(courseID):
     
     try:
         conn = connectionHandler()
-        sql_stmt = "SELECT * FROM SectionItem WHERE secItemNo IN (SELECT secItemNo FROM SectItemOfSection WHERE secNo IN (SELECT secNo FROM SecOfCourse WHERE cID = %(cID)s));"
+        sql_stmt = "select secNo from secofcourse where cid =%(cID)s;"
         conn.cursor.execute(sql_stmt,{'cID':courseID})
 
         contents  =[]
@@ -681,13 +682,10 @@ def getCourseContent(courseID):
             conn.close_cursor_and_connection()
             return make_response({'Info': []},204)            
 
-        for conName, conType, conDec in conn.cursor:
-            content = {}
-            content['name'] = conName
-            content['conType'] = conType
-            content['conDec'] = conDec
-
-            contents.append(content)
+        for secNo in conn.cursor:
+            secNo = secNo[0]
+            sectionContent = sectionContentHelper(secNo)
+            contents.append({f'{secNo}':sectionContent})
         
         conn.close_cursor_and_connection()
         return make_response({'success':contents},200)
@@ -698,46 +696,15 @@ def getCourseContent(courseID):
     
     except Exception as ex:
         conn.close_cursor_and_connection()
+        print(ex)
         return make_response({'error':'An error occurred when attempting to get course content'},503)
 
 
 
-@app.route('/course/section/<courseID>/<sectionID>',methods=["GET"])
-def getSectionContent(courseID,sectionID):
-    try:
-        conn = connectionHandler()
-        """The query below is partially completed as is the for loop below it.
-            As it is now it returns the list of section items, it needs to return the list of all the 
-            DIFFERENT types of section Items
-            -R. Senior
-            """
-        sql_stmt = "SELECT * FROM SectionItem WHERE secItemNo IN (SELECT secItemNo FROM SectItemOfSection WHERE secNo = %(sINo)s IN (SELECT secNo FROM SecOfCourse WHERE cID = %(cID)s));"
-        conn.cursor.execute(sql_stmt,{'sINo':sectionID,'cID':courseID})
-        secContent = []
-        
-        if not conn.cursor:
-            conn.close_cursor_and_connection()
-            return make_response({'Info': []},204)               
-        
-        for conName, conType, conDec in conn.cursor:
-            content = {}
-            content['name'] = conName
-            content['conType'] = conType
-            content['conDec'] = conDec
-
-            secContent.append(content)
-            
-        conn.close_cursor_and_connection()
-        return make_response({'success':secContent},200)
-        
-
-    except mysql.connector.Error as err:
-            conn.close_cursor_and_connection()
-            return make_response({'error': f"The following error occured: {err}"},500)
-    
-    except Exception as ex:
-        conn.close_cursor_and_connection()
-        return make_response({'error':'An error occurred when attempting to get course sections'},503)
+@app.route('/course/section/<sectionID>',methods=["GET"])
+def getSectionContent(sectionID):
+    sectionContent = sectionContentHelper(sectionID)
+    return make_response({'success':sectionContent},200)
 
 
 @app.route('/course/section/add/',methods=['POST'])
@@ -853,11 +820,85 @@ def gradeAssignment():
 @app.route('/course/report', methods =['GET'])
 def report():
     pass
+    #more  that 50 students
+    #SELECT cName FROM Course WHERE cID IN(SELECT cID FROM CourseOfStud WHERE COUNT(cID) > 50);
 
+    #more than 5 courses
+    # SELECT sfName, smName, slName FROM StudentName WHERE studID IN(SELECT studID FROM CourseOfStud WHERE COUNT(studID) > 4);
+
+    #All lecturers that teach 3 or more courses
+    #SELECT  lfName, lmName, llName FROM LectName WHERE lID in (SELECT lID from LectOfCourse WHERE COUNT(lID) > 2);
+
+    #The 10 most enrolled courses. 
+    #SELECT cName from Course WHERE cID IN(SELECT cID FROM);
 
 
 
     """Helper Functions"""
+
+
+def sectionContentHelper(sectionID):
+    try:
+        conn = connectionHandler()
+
+        secContent = []
+
+
+        # for content
+        sql_stmt_content = "SELECT con_Name, conType, content FROM content WHERE  secItemNo IN(SELECT secItemNo FROM SectionItem WHERE secNo  = %(sINo)s );"            
+        conn.cursor.execute(sql_stmt_content,{'sINo':sectionID})
+        contentlist = []
+        for con_Name,  conType, content in conn.cursor:
+            content_dict = {}
+            content_dict['name'] = con_Name
+            content_dict['conType'] = conType
+            content_blob = content
+            base64_data = base64.b64encode(content_blob)
+            json_data = base64_data.decode('utf-8')
+            content_dict['content'] = json_data
+
+            contentlist.append(content_dict)
+
+        # for sub portal
+        sql_stmt_submissionportal = "SELECT spName,dueDate FROM submissionportal WHERE  secItemNo IN(SELECT secItemNo FROM SectionItem WHERE secNo  = %(sINo)s );"            
+        conn.cursor.execute(sql_stmt_submissionportal,{'sINo':sectionID})
+        SubmissionPortal = []
+        
+        for spName,dueDate in conn.cursor:
+            portal = {}
+            portal['name'] = spName
+            portal['dueDate'] = dueDate
+            
+
+            SubmissionPortal.append(portal)
+
+        # for  Links
+        sql_stmt_links = "SELECT lkName FROM link WHERE  secItemNo IN(SELECT secItemNo FROM SectionItem WHERE secNo  = %(sINo)s );"            
+        conn.cursor.execute(sql_stmt_links,{'sINo':sectionID})
+        linkList = []
+        
+        for Lkname in conn.cursor:
+            link = {}
+            link['linkName'] = Lkname
+            
+
+            linkList.append(link)
+
+            
+        conn.close_cursor_and_connection()
+        return {'links':linkList,'SubmissionPortal':SubmissionPortal, 'content':contentlist }
+        
+
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            print(err)
+            # return make_response({'error': f"The following error occured: {err}"},500)
+    
+    except Exception as ex:
+        conn.close_cursor_and_connection()
+        print(ex)
+        # return make_response({'error':f'{ex}'},503)
+        # return make_response({'error':'An error occurred when attempting to get course sections'},503)
 
 
 # Here we define a function to collect form errors from Flask-WTF
