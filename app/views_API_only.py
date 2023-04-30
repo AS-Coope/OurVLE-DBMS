@@ -740,25 +740,25 @@ def getSectionContent(courseID,sectionID):
         return make_response({'error':'An error occurred when attempting to get course sections'},503)
 
 
-@app.route('/course/section/add/<courseID>',methods=['POST'])
+@app.route('/course/section/add/',methods=['POST'])
 def addSection():
     try:
         conn = connectionHandler()
         createSection = request.json
-
+        
         name = createSection ['name']
         cID = createSection ['cID'] 
-        sql_stmt = "INSERT INTO Section(secNmae) VALUES(%(sn)s);"
+        sql_stmt = "INSERT INTO Section(secName) VALUES(%(sn)s);"
         conn.cursor.execute(sql_stmt,{'sn':name})
         conn.connection.commit()
-        sql_stmt_id = "SELECT secid FROM Section WHERE secName = %(sn)s;"
+        sql_stmt_id = "SELECT secNo FROM Section WHERE secName = %(sn)s;"
         conn.cursor.execute(sql_stmt_id,{'sn':name})
-        id = conn.cursor.fetchone()
+        id = conn.cursor.fetchone()[0]
         sql_stmt_insert = "INSERT INTO SecOfCourse(secNo, cID) VALUES(%(id)s,%(cID)s)"
         conn.cursor.execute(sql_stmt_insert,{'id':id,'cID':cID})
         conn.connection.commit()
         conn.close_cursor_and_connection()
-        return make_response({'success':'Section created'},200)
+        return make_response({'success':'Section created.'},200)
     
 
     except mysql.connector.Error as err:
@@ -767,11 +767,75 @@ def addSection():
     
     except Exception as ex:
         conn.close_cursor_and_connection()
+        #return make_response({'error':f'{ex}'},503) 
         return make_response({'error':'An error occurred when attempting to add course section'},503) 
 
-@app.route('/course/section/content/add',methods=['GET','POST'])
+@app.route('/course/section/content/add',methods=['POST'])
 def addContent():
-    pass
+    addContent = request.json
+
+    #Getting all information related to section for : sectionitem,sectionlink,sectionitemofsection cauz idk which one to add to db 
+    secNo = addContent['secNo'].strip()
+    conType = addContent['conType'].strip().lower() #enter whether content is link/submissionportal
+
+    #adds sectionitem to db
+
+    try:
+        conn = connectionHandler()
+        #1st check if the section exists
+        sql_stmt_check_if_sec_exists = "select IF((SELECT COUNT(secNo) FROM section WHERE secNo = %(no)s) > 0, 'Yes', 'No') as Result;"
+        conn.cursor.execute(sql_stmt_check_if_sec_exists,{'no':secNo})
+        resp1 = conn.cursor.fetchone()[0]
+     
+        if resp1 == 'No':
+            return make_response({'error': "The section that you wish to add to does not exist."},400)
+        
+        sql_stmt1 = "INSERT INTO sectionitem(secNo) VALUES(%(sn)s);"
+        conn.cursor.execute(sql_stmt1,{'sn':secNo})
+        conn.connection.commit()
+        
+        # return the value of the last auto-incremented field that was inserted into the table.
+        conn.cursor.execute("SELECT LAST_INSERT_ID();")
+        secItemNo = conn.cursor.fetchone()[0]
+
+       
+        #if content is link add sectionlink to db
+        if conType == "link":
+            lkName = addContent['lkName']
+            sql_stmt2 = "INSERT INTO link(lkName,secItemNo) VALUES(%(lkid)s, %(sn)s);"
+            conn.cursor.execute(sql_stmt2,{'lkid':lkName,'sn':secItemNo})
+            conn.connection.commit()
+            return make_response({'success':'Link added.'},200)
+
+        #if content is submissionportal add submissionportal to db
+        if conType == "submissionportal":
+            sectionItemName = addContent['sectionItemName'] #enter the name you want to be displayed for the content
+            spName = sectionItemName
+            dueDate = addContent['dueDate']
+            sql_stmt3 = "INSERT INTO submissionportal(spName,dueDate,secItemNo) VALUES(%(spname)s, %(dd)s, %(secitem)s);"
+            conn.cursor.execute(sql_stmt3,{'spname':spName, 'dd':dueDate,'secitem':secItemNo})
+            conn.connection.commit()
+            return make_response({'success':'Portal added.'},200)
+
+        # if it's content
+        else:
+            name = addContent['name']
+            secContent = addContent['secContent'] #enter the actual content eg:.pdf,.docx,image --idk how this would apply to submission portal
+            sql_stmt4 = "INSERT INTO content(con_Name,secItemNo,conType,content) VALUES(%(name)s,%(sn)s,%(type)s,%(content)s);"
+            conn.cursor.execute(sql_stmt4,{'name':name, 'sn': secItemNo, 'type':conType,'content':secContent})
+            conn.connection.commit()
+            return make_response({'success':'Content added.'},200)
+
+
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+    
+    except Exception as ex:
+        conn.close_cursor_and_connection()
+        # return make_response({'error':f'{ex}'},503) 
+        return make_response({'error':'An error occurred when attempting to add course section'},503)
+
 
 @app.route('/course/assignment',methods=['GET'])
 def getAssignments():
