@@ -817,11 +817,110 @@ def gradeAssignment():
     pass
 
 
-@app.route('/course/report', methods =['GET'])
-def report():
-    pass
-    #more  that 50 students
-    #SELECT cName FROM Course WHERE cID IN(SELECT cID FROM CourseOfStud WHERE COUNT(cID) > 50);
+@app.route('/report/coursewith50ormore', methods =['GET'])
+def reportcoursewith50ormore():
+    
+    try:
+        conn = connectionHandler()
+        sql_stmt = "SELECT * FROM courseoverfifty;"
+
+        conn.cursor.execute(sql_stmt)
+        courses = []
+
+        for count,cid in conn.cursor:
+              courses.append([count,cid]) 
+        
+        return make_response({'success': courses},200)
+
+
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+    
+    except Exception as ex:
+        conn.close_cursor_and_connection()
+        # return make_response({'error':f'{ex}'},503) 
+        return make_response({'error':'An error occurred when attempting to retrieve courseoverfifty'},503)
+
+
+@app.route('/report/studentsmorethanFive', methods =['GET'])
+def reportstudentsmorethanFive():
+    
+    try:
+        conn = connectionHandler()
+        sql_stmt = "SELECT * FROM StudentsFiveOrMoreCourses;"
+
+        conn.cursor.execute(sql_stmt)
+        students = []
+
+        for studid in conn.cursor:
+              students.append(studid)
+        
+        return make_response({'success': students},200)
+
+
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+    
+    except Exception as ex:
+        conn.close_cursor_and_connection()
+        # return make_response({'error':f'{ex}'},503) 
+        return make_response({'error':'An error occurred when attempting to retrieve studentsmorethanFive'},503)
+
+
+
+@app.route('/report/lectOfThreePlusCourses', methods =['GET'])
+def reportlectOfThreePlusCourses():
+    
+    try:
+        conn = connectionHandler()
+        sql_stmt = "SELECT * FROM lectOfThreePlusCourses;"
+
+        conn.cursor.execute(sql_stmt)
+        lecturers = []
+
+        for lid in conn.cursor:
+              lecturers.append(lid)
+        
+        return make_response({'success': lecturers},200)
+
+
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+    
+    except Exception as ex:
+        conn.close_cursor_and_connection()
+        # return make_response({'error':f'{ex}'},503) 
+        return make_response({'error':'An error occurred when attempting to retrieve lectOfThreePlusCourses'},503)
+
+
+
+@app.route('/report/TenMostEnrolledCourses', methods =['GET'])
+def reportTenMostEnrolledCourses():
+    
+    try:
+        conn = connectionHandler()
+        sql_stmt = "SELECT * FROM TenMostEnrolledCourses;"
+
+        conn.cursor.execute(sql_stmt)
+        courses = []
+
+        for count,cid in conn.cursor:
+            courses.append([count,cid])
+        
+        return make_response({'success': courses},200)
+
+
+    except mysql.connector.Error as err:
+            conn.close_cursor_and_connection()
+            return make_response({'error': f"The following error occured: {err}"},500)
+    
+    except Exception as ex:
+        conn.close_cursor_and_connection()
+        # return make_response({'error':f'{ex}'},503) 
+        return make_response({'error':'An error occurred when attempting to retrieve TenMostEnrolledCourses'},503)
 
     #more than 5 courses
     # SELECT sfName, smName, slName FROM StudentName WHERE studID IN(SELECT studID FROM CourseOfStud WHERE COUNT(studID) > 4);
