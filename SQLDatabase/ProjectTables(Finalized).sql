@@ -213,16 +213,25 @@ CREATE TABLE SubmissionPortal(
 
 -- creating SubmissionEntries table 
 CREATE TABLE SubmissionEntries(
-    spID int NOT NULL,
-    studID varchar(255) NOT NULL,
-    itemSubmit BLOB
+    spID varchar(255) NOT NULL,
+    studID int NOT NULL,
+    itemSubmit varchar(255)
 );
 
 -- creating SubmissionGrade table
 CREATE TABLE SubmissionGrade(
     studID int NOT NULL,
     spID varchar(255) NOT NULL,
-    grade int NOT NULL
+    grade int
+);
+
+-- ######## TABLES THAT DEAL WITH THE Content (a type of Section Item) #########
+CREATE TABLE Content(
+    conID int NOT NULL,
+    secItemNo int NOT NULL,
+    conName varchar(255) NOT NULL,
+    conType varchar(255) NOT NULL,
+    conDec varchar(255) NULL
 );
 
 -- ######## TABLES THAT DEAL WITH THE Link (a type of Section Item) #########
