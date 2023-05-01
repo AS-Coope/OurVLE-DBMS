@@ -29,3 +29,10 @@ create view lectOfThreePlusCourses as
 select lid from lectofcourse 
 group by lid 
 having count(lid) >= 3;
+
+create view topaverages as 
+SELECT sg.studID, sn.sfName, sn.smName, sn.slName, avg( sg.grade ) as avg_grade FROM submissiongrade as sg 
+join studentname as sn on sg.studID = sn.studID 
+group by sn.sfName, sn.smName, sn.slName, sg.studID 
+order by avg_grade desc 
+limit 10;
