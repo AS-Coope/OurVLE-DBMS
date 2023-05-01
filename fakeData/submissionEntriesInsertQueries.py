@@ -89,13 +89,13 @@ def submissionEntriesFirstFile():
             # value = "(" + '"' + assignmentDict[currentCourseAssignment] + '"' + ',' + "Assignment " + '"' + line[2].strip + '"' + ' for ' + '"' + line[1].strip + '"' + ',' + '"' + str(yearOfDate) + "-" + str(monthOfDate) + "-" + str(dayOfMonth) + '"' + ',' + '"' + str(submitYear) + "-" + str(submitMonth) + "-" + str(submitDay) + '"' + "),\n"
             # NOTE: In relation to the database schema, the attrbiute name spID is equivalent to the value returned by assignmentDict[currentCourseAssignment]
             # value = "(" + '"' + assignmentDict[currentCourseAssignment] + '"' + ',' + '"' + line[0].strip() + '"' + ',' + '" "' + "),\n" # in case itemsubmit needs an empty string
-            value = "(" + str(seIDIncrementVal) + ',' + line[0].strip() + ',' + '"SUBMITTED"' + ',' + '"' + str(submitYear) + "-" + str(submitMonth) + "-" + str(submitDay) + '"' + str(seIDIncrementVal) + "),\n"
+            value = "(" + str(seIDIncrementVal) + ',' + line[0].strip() + ',' + '"SUBMITTED"' + ',' + '"' + str(submitYear) + "-" + str(submitMonth) + "-" + str(submitDay) + '"' + ',' + str(seIDIncrementVal) + "),\n"
             #print(value)
             queryInserter.write(value)
             courseAssignmentCheckDict[currentCourseAssignment] = assignmentTag + currentCourseAssignment
         else:
             # ensures that the last line ends with a semi-colon (to complete the query) instead of a comma
-            value = "(" + str(seIDIncrementVal) + ',' + line[0].strip() + ',' + '"SUBMITTED"' + ',' + '"' + str(submitYear) + "-" + str(submitMonth) + "-" + str(submitDay) + '"' + str(seIDIncrementVal) + ");\n"  
+            value = "(" + str(seIDIncrementVal) + ',' + line[0].strip() + ',' + '"SUBMITTED"' + ',' + '"' + str(submitYear) + "-" + str(submitMonth) + "-" + str(submitDay) + '"' + ',' + str(seIDIncrementVal) + ");\n"  
             #print(value)
             queryInserter.write(value)
             courseAssignmentCheckDict[currentCourseAssignment] = assignmentTag + currentCourseAssignment
@@ -148,13 +148,13 @@ def submissionEntriesSecondFile():
             # value = "(" + '"' + assignmentDict[currentCourseAssignment] + '"' + ',' + "Assignment " + '"' + line[2].strip + '"' + ' for ' + '"' + line[1].strip + '"' + ',' + '"' + str(yearOfDate) + "-" + str(monthOfDate) + "-" + str(dayOfMonth) + '"' + ',' + '"' + str(submitYear) + "-" + str(submitMonth) + "-" + str(submitDay) + '"' + "),\n"
             # NOTE: In relation to the database schema, the attrbiute name spID is equivalent to the value returned by assignmentDict[currentCourseAssignment]
             # value = "(" + '"' + assignmentDict[currentCourseAssignment] + '"' + ',' + '"' + line[0].strip() + '"' + ',' + '" "' + "),\n" # in case itemsubmit needs an empty string
-            value = "(" + str(seIDIncrementVal) + ',' + line[0].strip() + ',' + '"SUBMITTED"' + ',' + '"' + str(submitYear) + "-" + str(submitMonth) + "-" + str(submitDay) + '"' + str(seIDIncrementVal) + "),\n"
+            value = "(" + str(seIDIncrementVal) + ',' + line[0].strip() + ',' + '"SUBMITTED"' + ',' + '"' + str(submitYear) + "-" + str(submitMonth) + "-" + str(submitDay) + '"' + ',' + str(seIDIncrementVal) + "),\n"
             #print(value)
             queryInserter.write(value)
             courseAssignmentCheckDict[currentCourseAssignment] = assignmentTag + currentCourseAssignment
         else:
             # ensures that the last line ends with a semi-colon (to complete the query) instead of a comma
-            value = "(" + str(seIDIncrementVal) + ',' + line[0].strip() + ',' + '"SUBMITTED"' + ',' + '"' + str(submitYear) + "-" + str(submitMonth) + "-" + str(submitDay) + '"' + str(seIDIncrementVal) + ");\n"  
+            value = "(" + str(seIDIncrementVal) + ',' + line[0].strip() + ',' + '"SUBMITTED"' + ',' + '"' + str(submitYear) + "-" + str(submitMonth) + "-" + str(submitDay) + '"' + ',' + str(seIDIncrementVal) + ");\n"  
             #print(value)
             queryInserter.write(value)
             courseAssignmentCheckDict[currentCourseAssignment] = assignmentTag + currentCourseAssignment
@@ -207,13 +207,13 @@ def submissionEntriesThirdFile():
             # value = "(" + '"' + assignmentDict[currentCourseAssignment] + '"' + ',' + "Assignment " + '"' + line[2].strip + '"' + ' for ' + '"' + line[1].strip + '"' + ',' + '"' + str(yearOfDate) + "-" + str(monthOfDate) + "-" + str(dayOfMonth) + '"' + ',' + '"' + str(submitYear) + "-" + str(submitMonth) + "-" + str(submitDay) + '"' + "),\n"
             # NOTE: In relation to the database schema, the attrbiute name spID is equivalent to the value returned by assignmentDict[currentCourseAssignment]
             # value = "(" + '"' + assignmentDict[currentCourseAssignment] + '"' + ',' + '"' + line[0].strip() + '"' + ',' + '" "' + "),\n" # in case itemsubmit needs an empty string
-            value = "(" + str(seIDIncrementVal) + ',' + line[0].strip() + ',' + '"SUBMITTED"' + ',' + '"' + str(submitYear) + "-" + str(submitMonth) + "-" + str(submitDay) + '"' + str(seIDIncrementVal) + "),\n"
+            value = "(" + str(seIDIncrementVal) + ',' + line[0].strip() + ',' + '"SUBMITTED"' + ',' + '"' + str(submitYear) + "-" + str(submitMonth) + "-" + str(submitDay) + '"' + ',' + str(seIDIncrementVal) + "),\n"
             #print(value)
             queryInserter.write(value)
             courseAssignmentCheckDict[currentCourseAssignment] = assignmentTag + currentCourseAssignment
         else:
             # ensures that the last line ends with a semi-colon (to complete the query) instead of a comma
-            value = "(" + str(seIDIncrementVal) + ',' + line[0].strip() + ',' + '"SUBMITTED"' + ',' + '"' + str(submitYear) + "-" + str(submitMonth) + "-" + str(submitDay) + '"' + str(seIDIncrementVal) + ");\n"  
+            value = "(" + str(seIDIncrementVal) + ',' + line[0].strip() + ',' + '"SUBMITTED"' + ',' + '"' + str(submitYear) + "-" + str(submitMonth) + "-" + str(submitDay) + '"' + ',' + str(seIDIncrementVal) + ");\n"  
             #print(value)
             queryInserter.write(value)
             courseAssignmentCheckDict[currentCourseAssignment] = assignmentTag + currentCourseAssignment
