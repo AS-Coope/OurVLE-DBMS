@@ -96,6 +96,9 @@ def empRegister():
     hashedPassword = sha256_crypt.hash(pwd)
     try:
         conn = connectionHandler()
+
+
+
         sql_stmt = "INSERT into LECTURER (lID,Password,email) VALUES( %(lectID)s, %(lectpwd)s, %(email)s);"  # Used to secure SQL statements to prevent injection
         conn.cursor.execute(sql_stmt,{'lectID':LectID,'lectpwd':hashedPassword, 'email':email})
 
@@ -134,7 +137,6 @@ def studentRegister():
         pwd =   student['pwd']
         email = student['email']
         dept = student['deptID']
-        acNo = 'STU' + stuID
         hashedPassword = sha256_crypt.hash(pwd)
    
         try:
@@ -142,9 +144,7 @@ def studentRegister():
             sql_stmt = "INSERT into Student (studID,Password,email) VALUES( %(sID)s, %(spwd)s, %(mail)s);"  # Used to secure SQL statements to prevent injection
             conn.cursor.execute(sql_stmt,{'sID':stuID,'spwd':hashedPassword, 'mail':email})
 
-            sql_2 = "INSERT into StudentAccount (studID,acNo) VALUES( %(sID)s,  %(an)s);"  # Used to secure SQL statements to prevent injection
-            conn.cursor.execute(sql_2,{'sID':stuID, 'an':acNo})
-
+            
             sql_3 = "INSERT into StudentName(studID, sfName, smName, slName) VALUES(%(sID)s, %(fn)s, %(mn)s, %(ln)s);"
             conn.cursor.execute(sql_3,{'sID':stuID, 'fn':fName, 'mn':mName, 'ln':lName})
             
@@ -175,10 +175,10 @@ Returns:
 def createCourse():
 
     course = request.json   
-    cID = course['cID']
-    cfName = course['cfname']
-    lID  = course['lID']
-    deptID =  course['deptID']
+    cID = course['cID'].strip()
+    cfName = course['cfName'].strip()
+    lID  = course['lID'].strip()
+    deptID =  course['deptID'].strip()
     try:
         conn = connectionHandler()
         sql_stmt = "INSERT into Course (cID,cfName) VALUES(%(cID)s, %(cn)s);"        
