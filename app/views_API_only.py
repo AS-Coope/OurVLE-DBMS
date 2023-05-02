@@ -87,9 +87,7 @@ def empRegister():
     fName = LecturerRegistration['fName']
     mName = LecturerRegistration['mName']
     lName = LecturerRegistration['lName']
-    LectID = LecturerRegistration['LectID']
     pwd = LecturerRegistration['pwd']
-    acNo = 'LEC' + LectID
     dept = LecturerRegistration['DeptID']
     email = LecturerRegistration['email']
     
@@ -99,17 +97,15 @@ def empRegister():
 
 
 
-        sql_stmt = "INSERT into LECTURER (lID,Password,email) VALUES( %(lectID)s, %(lectpwd)s, %(email)s);"  # Used to secure SQL statements to prevent injection
-        conn.cursor.execute(sql_stmt,{'lectID':LectID,'lectpwd':hashedPassword, 'email':email})
-
-        sql_2 = "INSERT into LecturerAccount(lID,acNo) VALUES(%(lectID)s, %(n)s);"
-        conn.cursor.execute(sql_2,{'lectID':LectID, 'n':acNo})
-
+        sql_stmt = "INSERT into LECTURER (Password,email) VALUES(%(lectpwd)s, %(email)s);"  # Used to secure SQL statements to prevent injection
+        conn.cursor.execute(sql_stmt,{'lectpwd':hashedPassword, 'email':email})
+        conn.cursor.execute("SELECT LAST_INSERT_ID();")
+        id = conn.cursor.fetchone()[0]
         sql_3 = "INSERT into lectofdept(lID, deptID) VALUES(%(l)s, %(d)s);"
-        conn.cursor.execute(sql_3,{'l':LectID, 'd':dept})
+        conn.cursor.execute(sql_3,{'l':id, 'd':dept})
 
         sql_4 = "INSERT into lectname(lID,lfName,lmName,llName) VALUES(%(LID)s,%(f)s,%(m)s,%(l)s);"
-        conn.cursor.execute(sql_4,{'LID':LectID,'f':fName,'m':mName,'l':lName})
+        conn.cursor.execute(sql_4,{'LID':id,'f':fName,'m':mName,'l':lName})
 
         conn.connection.commit()
 
@@ -133,7 +129,6 @@ def studentRegister():
         fName = student['fName']
         mName = student['mName']
         lName = student['lName']
-        stuID = student['stuID']
         pwd =   student['pwd']
         email = student['email']
         dept = student['deptID']
@@ -141,15 +136,16 @@ def studentRegister():
    
         try:
             conn = connectionHandler()
-            sql_stmt = "INSERT into Student (studID,Password,email) VALUES( %(sID)s, %(spwd)s, %(mail)s);"  # Used to secure SQL statements to prevent injection
-            conn.cursor.execute(sql_stmt,{'sID':stuID,'spwd':hashedPassword, 'mail':email})
-
+            sql_stmt = "INSERT into Student (Password,email) VALUES(%(spwd)s, %(mail)s);"  # Used to secure SQL statements to prevent injection
+            conn.cursor.execute(sql_stmt,{'spwd':hashedPassword, 'mail':email})
+            conn.cursor.execute("SELECT LAST_INSERT_ID();")
+            id = conn.cursor.fetchone()[0]
             
             sql_3 = "INSERT into StudentName(studID, sfName, smName, slName) VALUES(%(sID)s, %(fn)s, %(mn)s, %(ln)s);"
-            conn.cursor.execute(sql_3,{'sID':stuID, 'fn':fName, 'mn':mName, 'ln':lName})
+            conn.cursor.execute(sql_3,{'sID':id, 'fn':fName, 'mn':mName, 'ln':lName})
             
             sql_4 = "INSERT into StudentOfDept(studID, deptID) VALUES(%(s)s, %(d)s);"
-            conn.cursor.execute(sql_4,{'s':stuID,'d':dept})
+            conn.cursor.execute(sql_4,{'s':id,'d':dept})
 
             conn.connection.commit()
             conn.close_cursor_and_connection()
